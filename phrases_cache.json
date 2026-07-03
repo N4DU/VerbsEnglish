@@ -1,0 +1,3117 @@
+{
+  "find|base|find": [
+    "Can you ___ my keys?",
+    "I hope to ___ a good book.",
+    "We need to ___ a solution.",
+    "They usually ___ time for us.",
+    "He wants to ___ new friends."
+  ],
+  "find|past|found": [
+    "She ___ her wallet yesterday.",
+    "We ___ a nice cafe.",
+    "They ___ the answer easily.",
+    "I ___ some old photos.",
+    "He ___ a new job quickly."
+  ],
+  "find|part|found": [
+    "I have ___ my lost dog.",
+    "She has ___ true happiness.",
+    "We had never ___ that place.",
+    "The key was ___ under the mat.",
+    "He has ___ a lot of joy."
+  ],
+  "go|base|go": [
+    "Let's ___ to the park.",
+    "I want to ___ home now.",
+    "They usually ___ by bus.",
+    "We can ___ together tomorrow.",
+    "You should ___ to bed."
+  ],
+  "go|past|went": [
+    "She ___ to London last year.",
+    "We ___ to the cinema.",
+    "They ___ out for dinner.",
+    "I ___ shopping yesterday.",
+    "He ___ home early."
+  ],
+  "go|part|gone": [
+    "He has ___ to the shop.",
+    "They have ___ on holiday.",
+    "My keys are ___ forever.",
+    "The train had already ___.",
+    "She has ___ for a walk."
+  ],
+  "take|base|take": [
+    "Please ___ a seat.",
+    "I will ___ a break soon.",
+    "Can you ___ my bag?",
+    "We need to ___ action now.",
+    "They always ___ time to help."
+  ],
+  "take|past|took": [
+    "She ___ the book from me.",
+    "I ___ a photo yesterday.",
+    "We ___ a long walk.",
+    "He ___ a nap after lunch.",
+    "They ___ their bags and left."
+  ],
+  "take|part|taken": [
+    "I have ___ my medicine.",
+    "The picture was ___ by him.",
+    "They have ___ a new path.",
+    "He has ___ too much sugar.",
+    "My wallet was ___ from my bag."
+  ],
+  "have|base|have": [
+    "Do you ___ a pen?",
+    "I ___ a lot of work.",
+    "We ___ dinner at 7 pm.",
+    "They ___ a new car.",
+    "You must ___ patience."
+  ],
+  "have|past|had": [
+    "I ___ a great time yesterday.",
+    "She ___ a headache last night.",
+    "We ___ fun at the party.",
+    "They ___ no choice then.",
+    "He ___ a dog when young."
+  ],
+  "have|part|had": [
+    "I have ___ enough to eat.",
+    "She has ___ a long day.",
+    "We had ___ already left.",
+    "They have ___ much experience.",
+    "He has ___ a good rest."
+  ],
+  "leave|base|leave": [
+    "Don't ___ your bag here.",
+    "I will ___ early today.",
+    "We need to ___ soon.",
+    "Can I ___ a message?",
+    "They want to ___ the city."
+  ],
+  "leave|past|left": [
+    "She ___ her keys at home.",
+    "We ___ the party late.",
+    "They ___ a note for me.",
+    "I ___ my job last month.",
+    "He ___ a tip for waiter."
+  ],
+  "leave|part|left": [
+    "I have ___ my umbrella.",
+    "He has ___ for work already.",
+    "The car was ___ unlocked.",
+    "They have ___ the city for good.",
+    "We had ___ before dawn."
+  ],
+  "say|base|say": [
+    "What did you ___?",
+    "I want to ___ goodbye.",
+    "They always ___ hello.",
+    "You must ___ thank you.",
+    "Please ___ your name."
+  ],
+  "say|past|said": [
+    "She ___ hello to everyone.",
+    "He ___ he was sorry.",
+    "They ___ nothing about it.",
+    "I ___ yes to the offer.",
+    "We ___ goodbye quickly."
+  ],
+  "say|part|said": [
+    "It has been ___ many times.",
+    "I have ___ all I can.",
+    "She had ___ her prayers.",
+    "The words were ___ in anger.",
+    "We have ___ enough for now."
+  ],
+  "be|base|be": [
+    "I want to ___ happy.",
+    "To ___ or not to ___.",
+    "It must ___ cold outside.",
+    "She wants to ___ a doctor.",
+    "Let's ___ friends forever."
+  ],
+  "be|past|was": [
+    "I ___ tired yesterday.",
+    "She ___ at home all day.",
+    "The weather ___ nice.",
+    "He ___ a good student.",
+    "It ___ a big surprise."
+  ],
+  "be|part|been": [
+    "I have ___ to Paris.",
+    "She has ___ very busy.",
+    "We had ___ there before.",
+    "He has ___ ill for days.",
+    "It has ___ a long time."
+  ],
+  "tell|base|tell": [
+    "Can you ___ me a story?",
+    "I need to ___ him something.",
+    "Please ___ the truth.",
+    "Don't ___ anyone our secret.",
+    "They always ___ jokes."
+  ],
+  "tell|past|told": [
+    "She ___ him the news.",
+    "He ___ me to wait.",
+    "They ___ us a funny story.",
+    "I ___ you yesterday.",
+    "We ___ the police everything."
+  ],
+  "tell|part|told": [
+    "I have ___ him many times.",
+    "She had ___ me about it.",
+    "We were ___ to be quiet.",
+    "He has ___ the whole truth.",
+    "They had ___ a lie."
+  ],
+  "see|base|see": [
+    "Can you ___ the bird?",
+    "I want to ___ my family.",
+    "We will ___ you later.",
+    "They want to ___ the film.",
+    "Do you ___ what I mean?"
+  ],
+  "see|past|saw": [
+    "I ___ him yesterday.",
+    "She ___ a cat in the garden.",
+    "We ___ a great movie.",
+    "They ___ the accident happen.",
+    "He ___ you at the store."
+  ],
+  "see|part|seen": [
+    "I have never ___ such a thing.",
+    "She has ___ that film before.",
+    "We have ___ enough now.",
+    "He had ___ her many times.",
+    "Have you ___ my keys?"
+  ],
+  "feel|base|feel": [
+    "How do you ___ today?",
+    "I ___ happy when I sing.",
+    "We always ___ hungry after work.",
+    "Do you ___ the cold?",
+    "They ___ tired easily."
+  ],
+  "feel|past|felt": [
+    "I ___ very sad yesterday.",
+    "She ___ cold in the rain.",
+    "We ___ tired after the trip.",
+    "He ___ happy to be home.",
+    "They ___ much better later."
+  ],
+  "feel|part|felt": [
+    "I have ___ this pain before.",
+    "She has ___ a lot of stress.",
+    "We had ___ very welcome.",
+    "He has ___ stronger since then.",
+    "They have ___ good about it."
+  ],
+  "come|base|come": [
+    "Can you ___ here, please?",
+    "I want to ___ to your party.",
+    "They usually ___ on time.",
+    "We can ___ tomorrow morning.",
+    "Please ___ closer to me."
+  ],
+  "come|past|came": [
+    "She ___ home late last night.",
+    "He ___ to my house yesterday.",
+    "They ___ by car.",
+    "I ___ early for meeting.",
+    "We ___ from a small town."
+  ],
+  "come|part|come": [
+    "He has ___ a long way.",
+    "They have ___ to a decision.",
+    "I had ___ before you called.",
+    "She has ___ to visit us.",
+    "The rain has ___ again."
+  ],
+  "get|base|get": [
+    "Can you ___ me a coffee?",
+    "I want to ___ a new phone.",
+    "We need to ___ ready now.",
+    "They always ___ up early.",
+    "You should ___ some rest."
+  ],
+  "get|past|got": [
+    "I ___ a new book yesterday.",
+    "She ___ home late last night.",
+    "We ___ lost in the city.",
+    "They ___ married last year.",
+    "He ___ a letter this morning."
+  ],
+  "get|part|gotten": [
+    "I have ___ taller this year.",
+    "He has ___ used to it now.",
+    "They have ___ into trouble.",
+    "She has ___ a new job.",
+    "We had ___ tired of waiting."
+  ],
+  "give|base|give": [
+    "Can you ___ me your pen?",
+    "I want to ___ her a present.",
+    "We should ___ him a chance.",
+    "They always ___ good advice.",
+    "Please ___ me some water."
+  ],
+  "give|past|gave": [
+    "She ___ me a lovely gift.",
+    "He ___ his old coat away.",
+    "They ___ a party last night.",
+    "I ___ her my honest opinion.",
+    "We ___ money to charity."
+  ],
+  "give|part|given": [
+    "I have ___ all my effort.",
+    "She has ___ her notice.",
+    "We had ___ up hope.",
+    "He has ___ me good advice.",
+    "The award was ___ to her."
+  ],
+  "think|base|think": [
+    "What do you ___?",
+    "I ___ we should go now.",
+    "Do you ___ it's a good idea?",
+    "We always ___ about you.",
+    "Please ___ carefully before you speak."
+  ],
+  "think|past|thought": [
+    "I ___ you were here.",
+    "She ___ about her future.",
+    "We ___ the movie was great.",
+    "He ___ it was a good plan.",
+    "They ___ it would rain."
+  ],
+  "think|part|thought": [
+    "I have ___ about it a lot.",
+    "She has ___ too much.",
+    "We had ___ it over carefully.",
+    "He has ___ of a new idea.",
+    "The problem was well ___ out."
+  ],
+  "become|base|become": [
+    "I want to ___ a teacher.",
+    "She wants to ___ happy.",
+    "They will ___ famous.",
+    "It can ___ difficult sometimes.",
+    "We need to ___ stronger."
+  ],
+  "become|past|became": [
+    "He ___ a doctor last year.",
+    "She ___ very tired quickly.",
+    "They ___ good friends.",
+    "It ___ clear to everyone.",
+    "We ___ aware of the problem."
+  ],
+  "become|part|become": [
+    "She has ___ a mother.",
+    "It has ___ a big problem.",
+    "They had ___ very strong.",
+    "He has ___ an expert.",
+    "The city has ___ crowded."
+  ],
+  "put|base|put": [
+    "Please ___ the book down.",
+    "Can you ___ it here?",
+    "I want to ___ on my coat.",
+    "We need to ___ things away.",
+    "They will ___ up a tent."
+  ],
+  "put|past|put": [
+    "She ___ the keys on the table.",
+    "I ___ my phone in my bag.",
+    "We ___ a sign outside.",
+    "He ___ on a clean shirt.",
+    "They ___ out the fire."
+  ],
+  "put|part|put": [
+    "I have ___ my efforts into this.",
+    "She has ___ on weight.",
+    "The books were ___ away.",
+    "He had ___ his trust in her.",
+    "We have ___ the plan into action."
+  ],
+  "show|base|show": [
+    "Can you ___ me the way?",
+    "I want to ___ you something.",
+    "They always ___ kindness.",
+    "We need to ___ our tickets.",
+    "Please ___ respect to others."
+  ],
+  "show|past|showed": [
+    "She ___ me her new dress.",
+    "He ___ great courage.",
+    "They ___ their passports.",
+    "I ___ him the photo.",
+    "We ___ up late to party."
+  ],
+  "show|part|shown": [
+    "I have ___ you everything.",
+    "She has ___ great progress.",
+    "The picture was ___ to me.",
+    "He had ___ no fear.",
+    "We have ___ them the path."
+  ],
+  "do|base|do": [
+    "What will you ___?",
+    "I need to ___ my homework.",
+    "We always ___ our best.",
+    "They want to ___ a good job.",
+    "Can you ___ me a favor?"
+  ],
+  "do|past|did": [
+    "I ___ my best yesterday.",
+    "She ___ her chores quickly.",
+    "We ___ a lot of work.",
+    "He ___ well on the test.",
+    "They ___ not come."
+  ],
+  "do|part|done": [
+    "I have ___ my part.",
+    "She has ___ a great job.",
+    "We had ___ all the cooking.",
+    "He has ___ enough for today.",
+    "The work is almost ___."
+  ],
+  "know|base|know": [
+    "I don't ___ the answer.",
+    "Do you ___ her name?",
+    "We ___ they are right.",
+    "They want to ___ more.",
+    "I ___ how to swim."
+  ],
+  "know|past|knew": [
+    "I ___ the truth yesterday.",
+    "She ___ him from school.",
+    "We ___ it was wrong.",
+    "He ___ all the answers.",
+    "They ___ what to do."
+  ],
+  "know|part|known": [
+    "I have ___ him for years.",
+    "She has ___ better times.",
+    "It has been ___ for ages.",
+    "He had ___ about it.",
+    "We have ___ the secret."
+  ],
+  "make|base|make": [
+    "Can you ___ me some tea?",
+    "I want to ___ a cake.",
+    "We need to ___ a decision.",
+    "They always ___ noise.",
+    "Please ___ your bed."
+  ],
+  "make|past|made": [
+    "She ___ a delicious dinner.",
+    "He ___ a lot of money.",
+    "We ___ a big mistake.",
+    "They ___ us laugh.",
+    "I ___ a promise to her."
+  ],
+  "make|part|made": [
+    "I have ___ my bed.",
+    "She has ___ a full recovery.",
+    "The car was ___ in Germany.",
+    "He had ___ up his mind.",
+    "We have ___ new friends."
+  ],
+  "stand|base|stand": [
+    "Please ___ up.",
+    "I often ___ here.",
+    "Can you ___ still?",
+    "Don't ___ on the chair.",
+    "They always ___ by me."
+  ],
+  "stand|past|stood": [
+    "He ___ there yesterday.",
+    "We ___ up quickly.",
+    "The dog ___ still.",
+    "She ___ next to him.",
+    "They ___ by the door."
+  ],
+  "stand|part|stood": [
+    "I have ___ here before.",
+    "He had ___ for hours.",
+    "They have ___ by us.",
+    "She has ___ tall always.",
+    "We have ___ firm."
+  ],
+  "bring|base|bring": [
+    "Please ___ a book.",
+    "Can you ___ water?",
+    "They will ___ the food.",
+    "I always ___ my bag.",
+    "Don't ___ sand inside."
+  ],
+  "bring|past|brought": [
+    "She ___ a gift.",
+    "He ___ coffee for us.",
+    "We ___ our own lunch.",
+    "They ___ good news.",
+    "My dog ___ the ball."
+  ],
+  "bring|part|brought": [
+    "I have ___ many things.",
+    "He had ___ flowers before.",
+    "She has ___ joy to us.",
+    "The wind had ___ rain.",
+    "They have ___ their friends."
+  ],
+  "hear|base|hear": [
+    "Can you ___ me?",
+    "I often ___ music.",
+    "They will ___ the news.",
+    "Do you ___ that sound?",
+    "I want to ___ your story."
+  ],
+  "hear|past|heard": [
+    "I ___ a noise.",
+    "We ___ the song.",
+    "She ___ him clearly.",
+    "They ___ the news yesterday.",
+    "He never ___ my words."
+  ],
+  "hear|part|heard": [
+    "I have ___ that song.",
+    "He has ___ the truth.",
+    "We have ___ it before.",
+    "She had never ___ of it.",
+    "They have ___ enough."
+  ],
+  "set|base|set": [
+    "Please ___ the table.",
+    "They always ___ goals.",
+    "We need to ___ a date.",
+    "I will ___ the alarm.",
+    "Don't ___ your drink there."
+  ],
+  "set|past|set": [
+    "He ___ the book down.",
+    "She ___ the table already.",
+    "The sun ___ at 6 PM.",
+    "We ___ a new record.",
+    "They ___ the traps."
+  ],
+  "set|part|set": [
+    "I have ___ the alarm.",
+    "He has ___ a good example.",
+    "The table was ___ nicely.",
+    "They had ___ new rules.",
+    "The sun has already ___."
+  ],
+  "lose|base|lose": [
+    "Don't ___ your keys.",
+    "I hate to ___ games.",
+    "We might ___ this battle.",
+    "They often ___ their way.",
+    "You could ___ your phone."
+  ],
+  "lose|past|lost": [
+    "I ___ my wallet.",
+    "He ___ his job.",
+    "We ___ the game.",
+    "They ___ their way.",
+    "She ___ her temper."
+  ],
+  "lose|part|lost": [
+    "I have ___ my passport.",
+    "He has ___ all his money.",
+    "We have ___ touch.",
+    "They had ___ hope.",
+    "She felt completely ___."
+  ],
+  "read|base|read": [
+    "I love to ___ books.",
+    "Can you ___ this?",
+    "They will ___ the news.",
+    "We often ___ before bed.",
+    "He wants to ___ faster."
+  ],
+  "read|past|read": [
+    "I ___ the entire book.",
+    "She ___ the letter yesterday.",
+    "He ___ the signs wrongly.",
+    "We ___ about it online.",
+    "They ___ my thoughts."
+  ],
+  "read|part|read": [
+    "I have ___ that story.",
+    "He has ___ all the books.",
+    "We have ___ this before.",
+    "She had ___ the message.",
+    "The book was well ___."
+  ],
+  "lie|base|lie": [
+    "Please ___ down here.",
+    "I want to ___ on the bed.",
+    "Don't ___ in the sun too long.",
+    "The cat likes to ___ there.",
+    "I often ___ on the grass."
+  ],
+  "lie|past|lay": [
+    "He ___ on the sofa.",
+    "The dog ___ by the fire.",
+    "She ___ down for a nap.",
+    "I ___ in bed all day.",
+    "The books ___ on the table."
+  ],
+  "lie|part|lain": [
+    "I have ___ here for hours.",
+    "He had ___ in the sun.",
+    "The dog has ___ there all day.",
+    "She has ___ awake all night.",
+    "They had ___ still."
+  ],
+  "begin|base|begin": [
+    "Let's ___ the game.",
+    "When does it ___?",
+    "They will ___ at 9 AM.",
+    "I always ___ with a smile.",
+    "Don't ___ without me."
+  ],
+  "begin|past|began": [
+    "The show ___ at 8.",
+    "He ___ to sing loudly.",
+    "We ___ our journey early.",
+    "She ___ work yesterday.",
+    "It ___ to rain hard."
+  ],
+  "begin|part|begun": [
+    "The party has ___ already.",
+    "I have ___ a new book.",
+    "It had ___ snowing.",
+    "We have ___ our studies.",
+    "Has the class ___?"
+  ],
+  "grow|base|grow": [
+    "Plants need water to ___.",
+    "Children ___ quickly.",
+    "I want to ___ taller.",
+    "They will ___ their own food.",
+    "Flowers ___ in the garden."
+  ],
+  "grow|past|grew": [
+    "The tree ___ very tall.",
+    "He ___ up in London.",
+    "My dog ___ so fast.",
+    "She ___ tired quickly.",
+    "The flowers ___ beautifully."
+  ],
+  "grow|part|grown": [
+    "He has ___ a beard.",
+    "The plants have ___ big.",
+    "We have ___ older now.",
+    "She had ___ tired of waiting.",
+    "Children have ___ up quickly."
+  ],
+  "write|base|write": [
+    "Please ___ your name.",
+    "I need to ___ a letter.",
+    "Can you ___ clearly?",
+    "They will ___ a report.",
+    "I want to ___ a book."
+  ],
+  "write|past|wrote": [
+    "He ___ a beautiful song.",
+    "She ___ to me yesterday.",
+    "I ___ down your number.",
+    "We ___ the answers.",
+    "They ___ a long letter."
+  ],
+  "write|part|written": [
+    "I have ___ many letters.",
+    "This book was ___ by him.",
+    "Has she ___ her essay?",
+    "The rules are clearly ___.",
+    "They had ___ a secret note."
+  ],
+  "keep|base|keep": [
+    "Please ___ quiet.",
+    "I want to ___ this.",
+    "You should ___ your promises.",
+    "They always ___ secrets.",
+    "We need to ___ moving."
+  ],
+  "keep|past|kept": [
+    "I ___ my promise.",
+    "He ___ the secret well.",
+    "She ___ silent for a while.",
+    "We ___ our distance.",
+    "They ___ the dog inside."
+  ],
+  "keep|part|kept": [
+    "I have ___ that book.",
+    "He has ___ his word.",
+    "She had ___ all the gifts.",
+    "They have ___ us waiting.",
+    "We have ___ practicing daily."
+  ],
+  "speak|base|speak": [
+    "Can you ___ English?",
+    "I want to ___ to him.",
+    "Please ___ clearly.",
+    "Don't ___ too loudly.",
+    "They will ___ about their trip."
+  ],
+  "speak|past|spoke": [
+    "He ___ about his day.",
+    "She ___ softly to me.",
+    "They ___ for an hour.",
+    "I ___ to her yesterday.",
+    "The teacher ___ clearly."
+  ],
+  "speak|part|spoken": [
+    "I have ___ to him.",
+    "Has she ___ with you?",
+    "They had ___ about it.",
+    "The words were softly ___.",
+    "He has ___ often."
+  ],
+  "let|base|let": [
+    "Please ___ me go.",
+    "Don't ___ him win.",
+    "They will ___ us in.",
+    "We can ___ it happen.",
+    "Just ___ me try."
+  ],
+  "let|past|let": [
+    "She ___ the dog out.",
+    "He ___ me borrow his car.",
+    "They ___ us go early.",
+    "I ___ the secret slip.",
+    "We ___ them play."
+  ],
+  "let|part|let": [
+    "I have ___ him know.",
+    "She had ___ the cat in.",
+    "We have ___ it pass.",
+    "They have ___ us stay.",
+    "He had ___ his chance go."
+  ],
+  "lead|base|lead": [
+    "Who will ___ the team?",
+    "This path will ___ to town.",
+    "You must ___ by example.",
+    "They will ___ the way.",
+    "I can ___ you there."
+  ],
+  "lead|past|led": [
+    "He ___ the way yesterday.",
+    "She ___ the team to victory.",
+    "The road ___ to the lake.",
+    "They ___ a simple life.",
+    "I ___ him by the hand."
+  ],
+  "lead|part|led": [
+    "He has ___ a good life.",
+    "She had ___ them astray.",
+    "The signs have ___ us here.",
+    "We have been ___ by him.",
+    "They have ___ us to success."
+  ],
+  "run|base|run": [
+    "Can you ___ fast?",
+    "I like to ___ in the park.",
+    "They often ___ marathons.",
+    "Don't ___ in the house.",
+    "We need to ___ errands."
+  ],
+  "run|past|ran": [
+    "He ___ to catch the bus.",
+    "She ___ a long way.",
+    "The dog ___ after the ball.",
+    "We ___ out of milk.",
+    "They ___ very fast."
+  ],
+  "run|part|run": [
+    "I have ___ many races.",
+    "He has ___ for hours.",
+    "The water has ___ out.",
+    "She has ___ errands all day.",
+    "They had ___ a business."
+  ],
+  "hold|base|hold": [
+    "Please ___ my hand.",
+    "Can you ___ this for me?",
+    "Don't ___ your breath.",
+    "They will ___ a meeting.",
+    "I can ___ it tightly."
+  ],
+  "hold|past|held": [
+    "She ___ the baby carefully.",
+    "He ___ my hand tight.",
+    "We ___ a party last week.",
+    "They ___ a long discussion.",
+    "I ___ my breath."
+  ],
+  "hold|part|held": [
+    "I have ___ this belief.",
+    "He has ___ the record.",
+    "She had ___ him close.",
+    "The meeting was ___ yesterday.",
+    "They have ___ a grudge."
+  ],
+  "sit|base|sit": [
+    "Please ___ down.",
+    "I like to ___ here.",
+    "Don't ___ on the table.",
+    "They will ___ together.",
+    "Can we ___ there?"
+  ],
+  "sit|past|sat": [
+    "He ___ on the chair.",
+    "She ___ quietly reading.",
+    "We ___ in the park.",
+    "They ___ for a long time.",
+    "The cat ___ on my lap."
+  ],
+  "sit|part|sat": [
+    "I have ___ here before.",
+    "He has ___ there for hours.",
+    "She had ___ patiently.",
+    "We have ___ through many talks.",
+    "They have ___ very still."
+  ],
+  "meet|base|meet": [
+    "Let's ___ at 5 PM.",
+    "I want to ___ new people.",
+    "We will ___ them soon.",
+    "Do you want to ___ up?",
+    "They always ___ here."
+  ],
+  "meet|past|met": [
+    "We ___ for coffee.",
+    "I ___ him last year.",
+    "She ___ my family.",
+    "They ___ their goals.",
+    "He ___ her at the party."
+  ],
+  "meet|part|met": [
+    "I have ___ her before.",
+    "He has ___ his match.",
+    "We have ___ their requirements.",
+    "She had ___ him already.",
+    "They have ___ the challenge."
+  ],
+  "pay|base|pay": [
+    "I need to ___ the bill.",
+    "Please ___ attention.",
+    "You must ___ for this.",
+    "They will ___ you tomorrow.",
+    "We always ___ our taxes."
+  ],
+  "pay|past|paid": [
+    "I ___ for dinner.",
+    "She ___ him back.",
+    "He ___ attention closely.",
+    "We ___ the rent yesterday.",
+    "They ___ a high price."
+  ],
+  "pay|part|paid": [
+    "I have ___ my dues.",
+    "He has ___ his debts.",
+    "She had already ___ the bill.",
+    "We have ___ the price.",
+    "They have ___ for their mistakes."
+  ],
+  "mean|base|mean": [
+    "What does it ___?",
+    "I don't ___ to be rude.",
+    "They ___ well.",
+    "Do you ___ what you say?",
+    "Words often ___ different things."
+  ],
+  "mean|past|meant": [
+    "What did you ___?",
+    "He ___ to help me.",
+    "She ___ every word.",
+    "We never ___ any harm.",
+    "It was ___ to be."
+  ],
+  "mean|part|meant": [
+    "I have always ___ well.",
+    "It was ___ as a joke.",
+    "Has he ___ that before?",
+    "We had ___ to go.",
+    "This has always ___ a lot."
+  ],
+  "swim|base|swim": [
+    "I want to ___ today.",
+    "Can you ___ in the lake?",
+    "We can ___ after lunch.",
+    "They like to ___ very fast.",
+    "He needs to ___ now."
+  ],
+  "swim|past|swam": [
+    "She ___ in the ocean.",
+    "We ___ yesterday evening.",
+    "The fish ___ quickly away.",
+    "They ___ for an hour.",
+    "He ___ across the pool."
+  ],
+  "swim|part|swum": [
+    "Have you ever ___ there?",
+    "She has ___ many miles.",
+    "I had never ___ so far.",
+    "They have ___ in cold water.",
+    "He has ___ since morning."
+  ],
+  "sing|base|sing": [
+    "Let's ___ a song.",
+    "Can you ___ for us?",
+    "I like to ___ loudly.",
+    "They always ___ in the shower.",
+    "He wants to ___ now."
+  ],
+  "sing|past|sang": [
+    "She ___ a beautiful song.",
+    "We ___ at the party.",
+    "The birds ___ early this morning.",
+    "He ___ his favorite tune.",
+    "They ___ together yesterday."
+  ],
+  "sing|part|sung": [
+    "Have you ever ___ this song?",
+    "She has ___ on stage.",
+    "That song was well ___.",
+    "I have ___ many times.",
+    "He had ___ before the show."
+  ],
+  "drink|base|drink": [
+    "I want to ___ water.",
+    "Can you ___ some juice?",
+    "We must ___ enough every day.",
+    "They like to ___ tea.",
+    "He needs to ___ milk."
+  ],
+  "drink|past|drank": [
+    "She ___ all the water.",
+    "We ___ juice for breakfast.",
+    "He ___ coffee yesterday morning.",
+    "They ___ milk very quickly.",
+    "I ___ a lot of water."
+  ],
+  "drink|part|drunk": [
+    "Have you ever ___ this tea?",
+    "She has ___ too much.",
+    "I had ___ all my soda.",
+    "He has ___ since morning.",
+    "They have ___ some juice."
+  ],
+  "fall|base|fall": [
+    "Don't ___ off the chair!",
+    "The leaves will ___ soon.",
+    "I often ___ asleep quickly.",
+    "They might ___ down.",
+    "He shouldn't ___ on the ice."
+  ],
+  "fall|past|fell": [
+    "He ___ off his bike.",
+    "The rain ___ yesterday.",
+    "She ___ asleep quickly.",
+    "They ___ in love fast.",
+    "A book ___ from the shelf."
+  ],
+  "fall|part|fallen": [
+    "Have you ever ___ down?",
+    "The apples have ___ off.",
+    "He has ___ in love.",
+    "I had ___ before then.",
+    "The leaves had ___ already."
+  ],
+  "eat|base|eat": [
+    "I want to ___ pizza.",
+    "Can we ___ now, please?",
+    "They like to ___ fruit.",
+    "He wants to ___ an apple.",
+    "We should ___ healthily."
+  ],
+  "eat|past|ate": [
+    "She ___ all her dinner.",
+    "We ___ breakfast together.",
+    "He ___ a big sandwich.",
+    "They ___ at a restaurant.",
+    "I ___ an orange."
+  ],
+  "eat|part|eaten": [
+    "Have you ___ your lunch?",
+    "She has ___ all the cake.",
+    "I had not ___ all day.",
+    "They have ___ too much.",
+    "He has ___ every meal."
+  ],
+  "understand|base|understand": [
+    "I don't ___ this lesson.",
+    "Can you ___ what I mean?",
+    "We try to ___ him.",
+    "They need to ___ the rules.",
+    "He wants to ___ better."
+  ],
+  "understand|past|understood": [
+    "She ___ the problem easily.",
+    "We ___ his instructions.",
+    "I ___ what you said.",
+    "They ___ the situation well.",
+    "He ___ everything yesterday."
+  ],
+  "understand|part|understood": [
+    "Have you ___ the task?",
+    "She has ___ my feelings.",
+    "I had ___ it completely.",
+    "They have ___ the concept.",
+    "He has ___ for a long time."
+  ],
+  "freeze|base|freeze": [
+    "Water will ___ in cold.",
+    "Don't let the pipes ___.",
+    "I might ___ outside.",
+    "The ground can ___ hard.",
+    "It will ___ tonight."
+  ],
+  "freeze|past|froze": [
+    "The water ___ overnight.",
+    "My hands ___ in the cold.",
+    "The lake ___ solid.",
+    "He almost ___ to death.",
+    "The pipes ___ last night."
+  ],
+  "freeze|part|frozen": [
+    "Has the water ___ yet?",
+    "The ground is now ___.",
+    "I have never ___ food.",
+    "The meat was completely ___.",
+    "My fingers are half ___."
+  ],
+  "fly|base|fly": [
+    "Birds can ___ very high.",
+    "I want to ___ a kite.",
+    "They can ___ to the moon.",
+    "He will ___ tomorrow.",
+    "We want to ___ south."
+  ],
+  "fly|past|flew": [
+    "The bird ___ away quickly.",
+    "He ___ a kite yesterday.",
+    "We ___ to London last week.",
+    "An airplane ___ over us.",
+    "They ___ across the country."
+  ],
+  "fly|part|flown": [
+    "Have you ever ___ a kite?",
+    "She has ___ many times.",
+    "The birds have ___ south.",
+    "I had never ___ before.",
+    "He has ___ around the world."
+  ],
+  "build|base|build": [
+    "We want to ___ a house.",
+    "They plan to ___ a bridge.",
+    "He helps to ___ walls.",
+    "I want to ___ a sandcastle.",
+    "We need to ___ a fire."
+  ],
+  "build|past|built": [
+    "They ___ a new house.",
+    "He ___ a strong fence.",
+    "We ___ a snowman yesterday.",
+    "The company ___ new roads.",
+    "I ___ a model car."
+  ],
+  "build|part|built": [
+    "They have ___ many houses.",
+    "The bridge was well ___.",
+    "He has ___ a good career.",
+    "I had never ___ anything.",
+    "This house was ___ last year."
+  ],
+  "send|base|send": [
+    "Can you ___ an email?",
+    "I need to ___ a letter.",
+    "They will ___ a gift.",
+    "He wants to ___ flowers.",
+    "We must ___ a message."
+  ],
+  "send|past|sent": [
+    "She ___ an email yesterday.",
+    "I ___ you a letter.",
+    "He ___ flowers to her.",
+    "They ___ a package home.",
+    "We ___ the documents."
+  ],
+  "send|part|sent": [
+    "Have you ___ the email?",
+    "The package was already ___.",
+    "I had ___ the letter.",
+    "They have ___ many gifts.",
+    "He has ___ a message."
+  ],
+  "draw|base|draw": [
+    "Can you ___ a picture?",
+    "I like to ___ animals.",
+    "They want to ___ a map.",
+    "He tries to ___ faces.",
+    "We can ___ with pencils."
+  ],
+  "draw|past|drew": [
+    "She ___ a beautiful picture.",
+    "I ___ a cat yesterday.",
+    "He ___ a map for us.",
+    "They ___ on the wall.",
+    "We ___ funny faces."
+  ],
+  "draw|part|drawn": [
+    "Have you ever ___ a portrait?",
+    "The picture was well ___.",
+    "He has ___ many comics.",
+    "I had never ___ before.",
+    "They have ___ all morning."
+  ],
+  "choose|base|choose": [
+    "You can ___ any color.",
+    "I need to ___ a book.",
+    "They will ___ a leader.",
+    "He has to ___ a path.",
+    "We must ___ carefully."
+  ],
+  "choose|past|chose": [
+    "She ___ the blue one.",
+    "I ___ a new car.",
+    "He ___ his words carefully.",
+    "They ___ to stay home.",
+    "We ___ a nice spot."
+  ],
+  "choose|part|chosen": [
+    "Have you ___ a movie?",
+    "The topic has been ___.",
+    "He has ___ his profession.",
+    "I had already ___ my meal.",
+    "They have ___ their way."
+  ],
+  "buy|base|buy": [
+    "I want to ___ new shoes.",
+    "Can you ___ some milk?",
+    "They plan to ___ a house.",
+    "He needs to ___ food.",
+    "We want to ___ tickets."
+  ],
+  "buy|past|bought": [
+    "She ___ a new dress.",
+    "I ___ some bread yesterday.",
+    "He ___ a car last week.",
+    "They ___ gifts for us.",
+    "We ___ many books."
+  ],
+  "buy|part|bought": [
+    "Have you ___ milk yet?",
+    "The house has been ___.",
+    "He has ___ many things.",
+    "I had never ___ online.",
+    "They have ___ all groceries."
+  ],
+  "rise|base|rise": [
+    "The sun will ___ soon.",
+    "Prices might ___ this year.",
+    "I like to ___ early.",
+    "They watch the moon ___.",
+    "He wants to ___ to fame."
+  ],
+  "rise|past|rose": [
+    "The sun ___ at 6 AM.",
+    "Prices ___ dramatically last month.",
+    "She ___ from her seat.",
+    "He ___ to power quickly.",
+    "The smoke ___ slowly."
+  ],
+  "rise|part|risen": [
+    "Has the sun ___ already?",
+    "Prices have ___ a lot.",
+    "She has ___ above problems.",
+    "The bread has ___ perfectly.",
+    "He had ___ before me."
+  ],
+  "wear|base|wear": [
+    "I like to ___ hats.",
+    "You should ___ a coat.",
+    "They often ___ glasses.",
+    "He wants to ___ new shoes.",
+    "We must ___ safety gear."
+  ],
+  "wear|past|wore": [
+    "She ___ a red dress.",
+    "I ___ my new hat.",
+    "He ___ glasses yesterday.",
+    "They ___ uniforms to school.",
+    "We ___ warm jackets."
+  ],
+  "wear|part|worn": [
+    "Have you ever ___ a uniform?",
+    "This shirt is often ___.",
+    "He has ___ out his shoes.",
+    "I had ___ that coat.",
+    "They have ___ many hats."
+  ],
+  "break|base|break": [
+    "Don't ___ the glass!",
+    "It might ___ easily.",
+    "I will ___ the bad news.",
+    "They try to ___ records.",
+    "He wants to ___ free."
+  ],
+  "break|past|broke": [
+    "She ___ the window.",
+    "I ___ my leg last year.",
+    "He ___ the silence.",
+    "They ___ the rules.",
+    "The machine ___ down."
+  ],
+  "break|part|broken": [
+    "Has the glass ___ yet?",
+    "My leg was already ___.",
+    "The record has been ___.",
+    "He has ___ many promises.",
+    "It was already ___."
+  ],
+  "drive|base|drive": [
+    "I want to ___ a car.",
+    "Can you ___ me home?",
+    "They plan to ___ to the beach.",
+    "He needs to ___ carefully.",
+    "We will ___ there."
+  ],
+  "drive|past|drove": [
+    "She ___ to work yesterday.",
+    "I ___ my car too fast.",
+    "He ___ us to the airport.",
+    "They ___ all night long.",
+    "We ___ through the city."
+  ],
+  "drive|part|driven": [
+    "Have you ever ___ a truck?",
+    "The car has been ___ far.",
+    "He has ___ many miles.",
+    "I had never ___ before.",
+    "They have ___ all over."
+  ],
+  "cut|base|cut": [
+    "Can you ___ the bread?",
+    "I need to ___ my hair.",
+    "They want to ___ expenses.",
+    "He tries to ___ neatly.",
+    "We must ___ the rope."
+  ],
+  "cut|past|cut": [
+    "She ___ the cake for us.",
+    "I ___ my finger yesterday.",
+    "He ___ the grass this morning.",
+    "They ___ down the tree.",
+    "We ___ the price."
+  ],
+  "cut|part|cut": [
+    "Have you ___ the paper?",
+    "My hair was already ___.",
+    "He has ___ the ribbon.",
+    "The price has been ___.",
+    "They have ___ the wires."
+  ],
+  "spend|base|spend": [
+    "I want to ___ money.",
+    "We like to ___ time together.",
+    "They plan to ___ a week.",
+    "He needs to ___ wisely.",
+    "Don't ___ too much."
+  ],
+  "spend|past|spent": [
+    "She ___ all her money.",
+    "I ___ time with family.",
+    "He ___ a lot on clothes.",
+    "They ___ their vacation well.",
+    "We ___ hours talking."
+  ],
+  "spend|part|spent": [
+    "Have you ___ your money?",
+    "The time was well ___.",
+    "He has ___ too much.",
+    "I had ___ my energy.",
+    "They have ___ everything."
+  ],
+  "forget|base|forget": [
+    "Don't ___ my name!",
+    "I often ___ things.",
+    "They might ___ the meeting.",
+    "He tries to ___ the past.",
+    "We can't ___ this day."
+  ],
+  "forget|past|forgot": [
+    "She ___ her keys.",
+    "I ___ your birthday.",
+    "He ___ about the appointment.",
+    "They ___ to call us.",
+    "We ___ the answer."
+  ],
+  "forget|part|forgotten": [
+    "Has she ___ my name?",
+    "I have ___ my password.",
+    "The lesson has been ___.",
+    "He had ___ everything.",
+    "They have ___ the past."
+  ],
+  "use|base|use": [
+    "We can ___ this pen.",
+    "Do you ___ a computer?",
+    "I often ___ the bus.",
+    "Please ___ a clear voice.",
+    "They always ___ their phones."
+  ],
+  "use|past|used": [
+    "She ___ my car yesterday.",
+    "I ___ to live there.",
+    "They ___ the old method.",
+    "He ___ a map.",
+    "We ___ all the sugar."
+  ],
+  "finish|base|finish": [
+    "When do you ___ work?",
+    "Let's ___ this task.",
+    "I always ___ my homework.",
+    "They never ___ early.",
+    "We need to ___ soon."
+  ],
+  "finish|past|finished": [
+    "She ___ her book yesterday.",
+    "I ___ work at five.",
+    "They ___ the game quickly.",
+    "He ___ his meal.",
+    "We ___ all our chores."
+  ],
+  "like|base|like": [
+    "I ___ apples.",
+    "Do you ___ this song?",
+    "She doesn't ___ coffee.",
+    "They ___ to travel.",
+    "We ___ your new dress."
+  ],
+  "like|past|liked": [
+    "I ___ the movie yesterday.",
+    "She ___ her new job.",
+    "They ___ his idea.",
+    "He ___ ice cream as a child.",
+    "We ___ the party a lot."
+  ],
+  "look|base|look": [
+    "Please ___ at the board.",
+    "Do you ___ for keys?",
+    "She always ___ happy.",
+    "They ___ tired today.",
+    "I want to ___ outside."
+  ],
+  "look|past|looked": [
+    "She ___ happy yesterday.",
+    "I ___ for my keys.",
+    "They ___ at the sky.",
+    "He ___ very surprised.",
+    "We ___ for the cat."
+  ],
+  "start|base|start": [
+    "When do we ___?",
+    "Let's ___ the game now.",
+    "I always ___ early.",
+    "They ___ school in autumn.",
+    "We need to ___ soon."
+  ],
+  "start|past|started": [
+    "She ___ crying suddenly.",
+    "I ___ my new job.",
+    "They ___ the race.",
+    "He ___ working late.",
+    "We ___ a new project."
+  ],
+  "want|base|want": [
+    "I ___ a new car.",
+    "Do you ___ some tea?",
+    "She doesn't ___ to go.",
+    "They ___ to play.",
+    "We ___ to learn more."
+  ],
+  "want|past|wanted": [
+    "I ___ a new bike.",
+    "She ___ to leave early.",
+    "They ___ to win.",
+    "He ___ to help us.",
+    "We ___ that book."
+  ],
+  "try|base|try": [
+    "I will ___ my best.",
+    "Please ___ again.",
+    "Do you ___ to learn?",
+    "She must ___ harder.",
+    "We always ___ new food."
+  ],
+  "try|past|tried": [
+    "She ___ to open it.",
+    "I ___ a new recipe.",
+    "They ___ their best.",
+    "He ___ to call you.",
+    "We ___ the local food."
+  ],
+  "work|base|work": [
+    "I ___ in an office.",
+    "Do you ___ on weekends?",
+    "She doesn't ___ here.",
+    "They ___ very hard.",
+    "We ___ from home."
+  ],
+  "work|past|worked": [
+    "She ___ late last night.",
+    "I ___ all day yesterday.",
+    "They ___ on the project.",
+    "He ___ in a factory.",
+    "We ___ together for years."
+  ],
+  "ask|base|ask": [
+    "Can I ___ a question?",
+    "Please don't ___ me.",
+    "They often ___ for help.",
+    "We need to ___ him.",
+    "You can ___ your teacher."
+  ],
+  "ask|past|asked": [
+    "She ___ a question.",
+    "I ___ for directions.",
+    "They ___ me to wait.",
+    "He ___ about your trip.",
+    "We ___ for more time."
+  ],
+  "call|base|call": [
+    "Can you ___ me later?",
+    "Do you ___ your parents?",
+    "She will ___ you back.",
+    "They ___ it a secret.",
+    "We ___ our dog Max."
+  ],
+  "call|past|called": [
+    "She ___ me yesterday.",
+    "I ___ your name.",
+    "They ___ the police.",
+    "He ___ for help.",
+    "We ___ him a hero."
+  ],
+  "love|base|love": [
+    "I ___ pizza.",
+    "Do you ___ this song?",
+    "She doesn't ___ winter.",
+    "They ___ to read books.",
+    "We ___ our family."
+  ],
+  "love|past|loved": [
+    "She ___ the concert.",
+    "I ___ my grandmother very much.",
+    "They ___ living in Paris.",
+    "He ___ his old dog.",
+    "We ___ every minute."
+  ],
+  "hate|base|hate": [
+    "I ___ waiting.",
+    "Do you ___ early mornings?",
+    "She doesn't ___ her job.",
+    "They ___ cold weather.",
+    "We ___ lies."
+  ],
+  "hate|past|hated": [
+    "She ___ that movie.",
+    "I ___ spinach as a child.",
+    "They ___ their old house.",
+    "He ___ waking up early.",
+    "We ___ the long journey."
+  ],
+  "answer|base|answer": [
+    "Please ___ the question.",
+    "Can you ___ the phone?",
+    "They never ___ quickly.",
+    "I will ___ your email.",
+    "We must ___ honestly."
+  ],
+  "answer|past|answered": [
+    "She ___ the phone.",
+    "I ___ all questions.",
+    "They ___ my letter.",
+    "He ___ correctly.",
+    "We ___ his call."
+  ],
+  "play|base|play": [
+    "Let's ___ a game.",
+    "Do you ___ football?",
+    "She wants to ___ outside.",
+    "They ___ music loudly.",
+    "We ___ cards sometimes."
+  ],
+  "play|past|played": [
+    "She ___ tennis yesterday.",
+    "I ___ the piano.",
+    "They ___ a trick.",
+    "He ___ with his dog.",
+    "We ___ board games."
+  ],
+  "stop|base|stop": [
+    "Please ___ talking.",
+    "When do we ___?",
+    "They must ___ running.",
+    "I need to ___ smoking.",
+    "Let's ___ for a break."
+  ],
+  "stop|past|stopped": [
+    "She ___ talking suddenly.",
+    "I ___ at the light.",
+    "They ___ the car.",
+    "He ___ working early.",
+    "We ___ for lunch."
+  ],
+  "need|base|need": [
+    "I ___ more time.",
+    "Do you ___ help?",
+    "She doesn't ___ money.",
+    "They ___ new clothes.",
+    "We ___ to go now."
+  ],
+  "need|past|needed": [
+    "She ___ my advice.",
+    "I ___ new shoes.",
+    "They ___ a doctor.",
+    "He ___ to rest.",
+    "We ___ more food."
+  ],
+  "listen|base|listen": [
+    "Please ___ carefully.",
+    "Do you ___ to music?",
+    "She doesn't ___ to me.",
+    "They ___ to the radio.",
+    "We ___ to our teacher."
+  ],
+  "listen|past|listened": [
+    "She ___ to the news.",
+    "I ___ to your advice.",
+    "They ___ to the band.",
+    "He ___ carefully.",
+    "We ___ to the story."
+  ],
+  "prefer|base|prefer": [
+    "I ___ coffee to tea.",
+    "Do you ___ sweet or salty?",
+    "She doesn't ___ winter.",
+    "They ___ to stay home.",
+    "We ___ quiet places."
+  ],
+  "prefer|past|preferred": [
+    "She ___ the old system.",
+    "I ___ the blue shirt.",
+    "They ___ silence.",
+    "He ___ to walk.",
+    "We ___ the first option."
+  ],
+  "watch|base|watch": [
+    "Let's ___ a movie.",
+    "Do you ___ TV often?",
+    "She likes to ___ birds.",
+    "They ___ the news.",
+    "We ___ sports games."
+  ],
+  "watch|past|watched": [
+    "She ___ the concert.",
+    "I ___ a good film.",
+    "They ___ the children play.",
+    "He ___ the game alone.",
+    "We ___ TV all night."
+  ],
+  "help|base|help": [
+    "Can you ___ me?",
+    "I will ___ you.",
+    "They often ___ others.",
+    "We always ___ each other.",
+    "You should ___ your friends."
+  ],
+  "help|past|helped": [
+    "She ___ me with homework.",
+    "I ___ my mother.",
+    "They ___ the old man.",
+    "He ___ a lot yesterday.",
+    "We ___ clear the table."
+  ],
+  "live|base|live": [
+    "I want to ___ in a big city.",
+    "They ___ happily ever after.",
+    "Do you ___ near here?",
+    "We ___ in a small house.",
+    "Birds ___ in trees."
+  ],
+  "live|past|lived": [
+    "She ___ in Paris for years.",
+    "They ___ in that house before.",
+    "We ___ there when I was young.",
+    "He ___ a good life.",
+    "The old man ___ alone."
+  ],
+  "move|base|move": [
+    "Please ___ this chair.",
+    "I need to ___ my car.",
+    "Don't ___ too fast.",
+    "Can you ___ your hand?",
+    "We plan to ___ next year."
+  ],
+  "move|past|moved": [
+    "She ___ to a new flat.",
+    "They ___ the furniture.",
+    "He ___ quickly to the door.",
+    "The family ___ last month.",
+    "I ___ the box."
+  ],
+  "arrive|base|arrive": [
+    "When do you ___?",
+    "They will ___ late tonight.",
+    "We need to ___ early.",
+    "The train should ___ soon.",
+    "You must ___ on time."
+  ],
+  "arrive|past|arrived": [
+    "She ___ home safely.",
+    "The guests ___ an hour ago.",
+    "He ___ at the station.",
+    "We ___ early for the show.",
+    "The package ___ yesterday."
+  ],
+  "remember|base|remember": [
+    "I always ___ your birthday.",
+    "Do you ___ my name?",
+    "Please ___ to call me.",
+    "I can't ___ that song.",
+    "We must ___ this day."
+  ],
+  "remember|past|remembered": [
+    "She ___ his face.",
+    "I ___ to lock the door.",
+    "He ___ the story well.",
+    "They ___ their old home.",
+    "We ___ all the details."
+  ],
+  "realize|base|realize": [
+    "I suddenly ___ the truth.",
+    "Do you ___ your mistake?",
+    "I ___ it now.",
+    "They might ___ their error.",
+    "We need to ___ our potential."
+  ],
+  "realize|past|realized": [
+    "She ___ her dream.",
+    "He ___ his mistake too late.",
+    "I ___ I left my keys.",
+    "They ___ the danger.",
+    "We ___ the game was over."
+  ],
+  "wait|base|wait": [
+    "Please ___ for me.",
+    "I can't ___ any longer.",
+    "You must ___ your turn.",
+    "Let's ___ here.",
+    "We should ___ for them."
+  ],
+  "wait|past|waited": [
+    "She ___ for the bus.",
+    "I ___ an hour for you.",
+    "They ___ patiently.",
+    "He ___ outside the door.",
+    "We ___ for the rain to stop."
+  ],
+  "travel|base|travel": [
+    "I want to ___ the world.",
+    "Do you like to ___?",
+    "We will ___ by train.",
+    "He plans to ___ next month.",
+    "They ___ light."
+  ],
+  "travel|past|traveled": [
+    "She ___ to Rome last year.",
+    "We ___ across the country.",
+    "He ___ a lot for work.",
+    "They ___ by bus.",
+    "I ___ far yesterday."
+  ],
+  "change|base|change": [
+    "I need to ___ my clothes.",
+    "Can you ___ your mind?",
+    "Things often ___.",
+    "We must ___ our plans.",
+    "They want to ___ the rules."
+  ],
+  "change|past|changed": [
+    "She ___ her hair color.",
+    "He ___ his plans.",
+    "The weather ___ quickly.",
+    "They ___ the date.",
+    "I ___ my mind."
+  ],
+  "clean|base|clean": [
+    "Please ___ your room.",
+    "I need to ___ the kitchen.",
+    "Let's ___ the car today.",
+    "You should ___ your shoes.",
+    "We must ___ before guests arrive."
+  ],
+  "clean|past|cleaned": [
+    "She ___ the house yesterday.",
+    "He ___ his desk.",
+    "We ___ the whole apartment.",
+    "They ___ the windows.",
+    "I ___ my plate."
+  ],
+  "cook|base|cook": [
+    "I will ___ dinner tonight.",
+    "Do you like to ___?",
+    "She can ___ very well.",
+    "Let's ___ something delicious.",
+    "We need to ___ the pasta."
+  ],
+  "cook|past|cooked": [
+    "She ___ a big meal.",
+    "He ___ pasta for us.",
+    "They ___ dinner together.",
+    "I ___ breakfast this morning.",
+    "We ___ the vegetables."
+  ],
+  "search|base|search": [
+    "I need to ___ for my keys.",
+    "They will ___ the area.",
+    "You should ___ online.",
+    "Let's ___ for a solution.",
+    "We must ___ thoroughly."
+  ],
+  "search|past|searched": [
+    "She ___ for her cat.",
+    "He ___ the whole house.",
+    "We ___ everywhere for it.",
+    "They ___ the internet.",
+    "I ___ my bag."
+  ],
+  "stay|base|stay": [
+    "Please ___ here.",
+    "I want to ___ home.",
+    "They will ___ with us.",
+    "Let's ___ longer.",
+    "You can ___ the night."
+  ],
+  "stay|past|stayed": [
+    "She ___ at home all day.",
+    "He ___ up late.",
+    "We ___ in a hotel.",
+    "They ___ for an hour.",
+    "I ___ calm."
+  ],
+  "taste|base|taste": [
+    "You should ___ this cake.",
+    "Does it ___ good?",
+    "I want to ___ the soup.",
+    "Let's ___ the wine.",
+    "This fruit should ___ sweet."
+  ],
+  "taste|past|tasted": [
+    "She ___ the new dish.",
+    "He ___ the bitter medicine.",
+    "It ___ delicious.",
+    "I ___ the soup and added salt.",
+    "They ___ the different cheeses."
+  ],
+  "close|base|close": [
+    "Please ___ the door.",
+    "I will ___ my eyes.",
+    "Can you ___ the window?",
+    "They ___ the shop at 6 pm.",
+    "We need to ___ the book."
+  ],
+  "close|past|closed": [
+    "She ___ the door quietly.",
+    "He ___ his umbrella.",
+    "The shop ___ early.",
+    "I ___ my book.",
+    "They ___ the curtains."
+  ],
+  "linger|base|linger": [
+    "Don't ___ here too long.",
+    "They like to ___ after dinner.",
+    "The smell will ___ in the air.",
+    "Let's not ___ on bad memories.",
+    "I want to ___ and talk."
+  ],
+  "linger|past|lingered": [
+    "She ___ at the doorway.",
+    "He ___ over his coffee.",
+    "The scent ___ in the room.",
+    "They ___ after the party.",
+    "I ___ a moment longer."
+  ],
+  "order|base|order": [
+    "I want to ___ pizza.",
+    "Can we ___ food now?",
+    "You can ___ online.",
+    "We need to ___ more supplies.",
+    "He will ___ a drink."
+  ],
+  "order|past|ordered": [
+    "She ___ a coffee.",
+    "He ___ a new book.",
+    "They ___ dinner last night.",
+    "We ___ too much food.",
+    "I ___ the blue one."
+  ],
+  "talk|base|talk": [
+    "Let's ___ about it.",
+    "Can we ___ later?",
+    "Do you want to ___?",
+    "They need to ___ to each other.",
+    "I like to ___ with friends."
+  ],
+  "talk|past|talked": [
+    "She ___ to him yesterday.",
+    "We ___ for hours.",
+    "He ___ about his trip.",
+    "They ___ quietly.",
+    "I ___ to my mom."
+  ],
+  "notice|base|notice": [
+    "I often ___ small details.",
+    "Do you ___ anything strange?",
+    "She will ___ your new hair.",
+    "We might not ___ it.",
+    "They usually ___ quickly."
+  ],
+  "notice|past|noticed": [
+    "She ___ him leave.",
+    "I ___ a strange sound.",
+    "He ___ my new shoes.",
+    "They ___ the mistake.",
+    "We ___ the changes."
+  ],
+  "open|base|open": [
+    "Please ___ the window.",
+    "Can you ___ this jar?",
+    "The shop will ___ at 9 am.",
+    "I want to ___ a gift.",
+    "They always ___ the door."
+  ],
+  "open|past|opened": [
+    "She ___ the present.",
+    "He ___ the door for me.",
+    "The store ___ early today.",
+    "I ___ my book.",
+    "They ___ the box."
+  ],
+  "shop|base|shop": [
+    "I want to ___ for new clothes.",
+    "Let's ___ this afternoon.",
+    "Do you like to ___ online?",
+    "We need to ___ for groceries.",
+    "She loves to ___ at weekends."
+  ],
+  "shop|past|shopped": [
+    "She ___ all day yesterday.",
+    "He ___ for food last week.",
+    "We ___ at the new mall.",
+    "They ___ until closing time.",
+    "I ___ for gifts."
+  ],
+  "plan|base|plan": [
+    "We always ___ our trips carefully.",
+    "I need to ___ my day.",
+    "They ___ a party for Friday.",
+    "Let's ___ to meet at 3.",
+    "She helps me ___ my work."
+  ],
+  "plan|past|planned": [
+    "We ___ the trip last week.",
+    "She ___ a surprise party.",
+    "They ___ the event carefully.",
+    "I ___ to call you later.",
+    "He ___ his escape well."
+  ],
+  "remind|base|remind": [
+    "Please ___ me about the meeting.",
+    "I always ___ him to call.",
+    "Can you ___ me to buy milk?",
+    "They ___ us of our goals.",
+    "Do not ___ me again."
+  ],
+  "remind|past|reminded": [
+    "He ___ me about my keys.",
+    "The teacher ___ us to study.",
+    "She ___ him of their plan.",
+    "I ___ her about the time.",
+    "They ___ me to be kind."
+  ],
+  "organize|base|organize": [
+    "Can you ___ the books?",
+    "We need to ___ our trip.",
+    "I will ___ the party.",
+    "They want to ___ a fair.",
+    "Help me ___ my desk."
+  ],
+  "organize|past|organized": [
+    "She ___ her closet yesterday.",
+    "They ___ the meeting quickly.",
+    "He ___ his thoughts well.",
+    "We ___ the event perfectly.",
+    "The team ___ the data."
+  ],
+  "agree|base|agree": [
+    "I ___ with your idea.",
+    "We both ___ it's important.",
+    "Do you ___ with him?",
+    "They never ___ on anything.",
+    "Let's ___ to meet soon."
+  ],
+  "agree|past|agreed": [
+    "We ___ to the new rules.",
+    "She ___ with his decision.",
+    "They ___ on the price.",
+    "I ___ to help him.",
+    "He ___ that it was fair."
+  ],
+  "discuss|base|discuss": [
+    "We will ___ the plan tomorrow.",
+    "Let's ___ this problem.",
+    "They like to ___ politics.",
+    "I want to ___ your ideas.",
+    "We should ___ this more."
+  ],
+  "discuss|past|discussed": [
+    "We ___ the problem yesterday.",
+    "They ___ the new project.",
+    "She ___ her concerns with him.",
+    "He ___ the topic for hours.",
+    "We ___ everything in detail."
+  ],
+  "mention|base|mention": [
+    "Please ___ my name.",
+    "Did you ___ the party?",
+    "I will ___ it to her.",
+    "Don't ___ this to anyone.",
+    "He forgot to ___ his trip."
+  ],
+  "mention|past|mentioned": [
+    "She ___ your name in class.",
+    "He ___ the meeting to me.",
+    "They ___ their concerns.",
+    "I ___ it briefly.",
+    "Nobody ___ the problem."
+  ],
+  "imagine|base|imagine": [
+    "Can you ___ a world without phones?",
+    "I can ___ that very well.",
+    "Just ___ you are a bird.",
+    "Try to ___ a quiet place.",
+    "It's hard to ___ that."
+  ],
+  "imagine|past|imagined": [
+    "She ___ a beautiful garden.",
+    "I ___ a different ending.",
+    "He ___ flying through the sky.",
+    "They ___ a better future.",
+    "We ___ the worst case."
+  ],
+  "mail|base|mail": [
+    "I will ___ the letter.",
+    "Please ___ this package for me.",
+    "Do you ___ cards often?",
+    "They only ___ important documents.",
+    "We need to ___ these forms."
+  ],
+  "mail|past|mailed": [
+    "I ___ the letter yesterday.",
+    "She ___ the package early.",
+    "He ___ all the invitations.",
+    "We ___ the payment on time.",
+    "They ___ their votes last week."
+  ],
+  "text|base|text": [
+    "Please ___ me later.",
+    "I need to ___ my friend.",
+    "Do you ___ him often?",
+    "She will ___ us details.",
+    "Let's ___ about it tonight."
+  ],
+  "text|past|texted": [
+    "She ___ me this morning.",
+    "He ___ his wife quickly.",
+    "I ___ you yesterday.",
+    "They ___ each other all day.",
+    "We ___ a quick reply."
+  ],
+  "receive|base|receive": [
+    "Did you ___ my email?",
+    "I hope to ___ good news.",
+    "We will ___ the package soon.",
+    "They often ___ gifts.",
+    "You will ___ a letter."
+  ],
+  "receive|past|received": [
+    "I ___ your letter yesterday.",
+    "She ___ the prize happily.",
+    "We ___ good news this morning.",
+    "He ___ a phone call.",
+    "They ___ many visitors."
+  ],
+  "fix|base|fix": [
+    "Can you ___ my bike?",
+    "I need to ___ this chair.",
+    "They will ___ the car.",
+    "He helps me ___ things.",
+    "Let's ___ the problem."
+  ],
+  "fix|past|fixed": [
+    "He ___ the broken toy.",
+    "She ___ her computer quickly.",
+    "They ___ the car yesterday.",
+    "I ___ the leaky faucet.",
+    "We ___ the mistake."
+  ],
+  "suggest|base|suggest": [
+    "I ___ we leave now.",
+    "What do you ___?",
+    "Can you ___ a good book?",
+    "They ___ a new approach.",
+    "Let me ___ a solution."
+  ],
+  "suggest|past|suggested": [
+    "He ___ a movie to watch.",
+    "She ___ we go to the park.",
+    "They ___ a different restaurant.",
+    "I ___ a new idea.",
+    "We ___ a meeting next week."
+  ],
+  "accept|base|accept": [
+    "Will you ___ my apology?",
+    "I cannot ___ this gift.",
+    "They always ___ new challenges.",
+    "Please ___ my thanks.",
+    "We must ___ the truth."
+  ],
+  "accept|past|accepted": [
+    "She ___ his offer.",
+    "They ___ the terms.",
+    "I ___ the job last week.",
+    "He ___ my apology.",
+    "We ___ their invitation."
+  ],
+  "report|base|report": [
+    "You must ___ the incident.",
+    "Please ___ your progress.",
+    "We need to ___ this crime.",
+    "They ___ news every day.",
+    "Can you ___ what happened?"
+  ],
+  "report|past|reported": [
+    "She ___ the news early.",
+    "He ___ the crime to police.",
+    "They ___ a strange sound.",
+    "I ___ my findings.",
+    "The newspaper ___ the event."
+  ],
+  "believe|base|believe": [
+    "I ___ in ghosts.",
+    "Do you ___ what he said?",
+    "We ___ it's the right choice.",
+    "They always ___ me.",
+    "I ___ you can do it."
+  ],
+  "believe|past|believed": [
+    "I ___ everything he said.",
+    "She ___ in magic as a child.",
+    "They ___ his story.",
+    "We ___ it was true.",
+    "He ___ her completely."
+  ],
+  "explain|base|explain": [
+    "Can you ___ this to me?",
+    "Please ___ your answer.",
+    "I will ___ it simply.",
+    "They need to ___ their plan.",
+    "It's hard to ___ fully."
+  ],
+  "explain|past|explained": [
+    "She ___ the lesson clearly.",
+    "He ___ his reasons.",
+    "They ___ the situation.",
+    "I ___ the rules to them.",
+    "We ___ everything in detail."
+  ],
+  "describe|base|describe": [
+    "Can you ___ your house?",
+    "Please ___ the painting.",
+    "I will ___ the scene.",
+    "How do you ___ that feeling?",
+    "They want to ___ their trip."
+  ],
+  "describe|past|described": [
+    "She ___ the thief to police.",
+    "He ___ his dream vividly.",
+    "They ___ the new product.",
+    "I ___ the view to him.",
+    "We ___ our adventure."
+  ],
+  "decide|base|decide": [
+    "I need to ___ soon.",
+    "Let's ___ together.",
+    "Can you ___ what to eat?",
+    "They will ___ tomorrow.",
+    "We must ___ our next step."
+  ],
+  "decide|past|decided": [
+    "She ___ to go home.",
+    "He ___ to quit his job.",
+    "They ___ against the trip.",
+    "I ___ to study harder.",
+    "We ___ to buy the car."
+  ],
+  "state|base|state": [
+    "Please ___ your name.",
+    "The rules clearly ___ this.",
+    "You must ___ your reason.",
+    "He will ___ his opinion.",
+    "I cannot ___ my feelings."
+  ],
+  "state|past|stated": [
+    "He ___ his purpose clearly.",
+    "She ___ her case well.",
+    "They ___ their objections.",
+    "I ___ my preferences.",
+    "The document ___ the facts."
+  ],
+  "guess|base|guess": [
+    "Can you ___ my age?",
+    "I ___ you're right.",
+    "Let's ___ the answer.",
+    "Do not ___ blindly.",
+    "Try to ___ the number."
+  ],
+  "guess|past|guessed": [
+    "I ___ the correct answer.",
+    "She ___ his weight.",
+    "He ___ wrong about the time.",
+    "They ___ her secret.",
+    "We ___ what would happen."
+  ],
+  "fight|base|fight": [
+    "Don't ___ with your brother.",
+    "They always ___ for their rights.",
+    "I will ___ for what is right.",
+    "We need to ___ this battle.",
+    "Let's not ___ over small things."
+  ],
+  "fight|past|fought": [
+    "They ___ a big battle yesterday.",
+    "He ___ hard and won.",
+    "We ___ for our team.",
+    "The soldiers ___ bravely.",
+    "She ___ with her sister last night."
+  ],
+  "fight|part|fought": [
+    "They have ___ many wars.",
+    "He has ___ against injustice.",
+    "We had ___ for our freedom.",
+    "The war was ___ bravely.",
+    "She has never ___ before."
+  ],
+  "sweep|base|sweep": [
+    "Please ___ the floor now.",
+    "I need to ___ the dirt away.",
+    "Let's ___ the leaves from the path.",
+    "Can you ___ the crumbs?",
+    "You should ___ the dust every day."
+  ],
+  "sweep|past|swept": [
+    "She ___ the kitchen floor yesterday.",
+    "He ___ all the leaves.",
+    "The maid ___ the room clean.",
+    "I ___ the broken glass carefully.",
+    "They ___ the path this morning."
+  ],
+  "sweep|part|swept": [
+    "The floor has been ___.",
+    "He had ___ the entire house.",
+    "All the dirt was ___ away.",
+    "Have you ___ your room yet?",
+    "The leaves have been ___ into a pile."
+  ],
+  "ring|base|ring": [
+    "The phone will ___ soon.",
+    "Can you ___ the bell?",
+    "Don't ___ the doorbell late.",
+    "I usually ___ my friend.",
+    "Let's ___ the school bell."
+  ],
+  "ring|past|rang": [
+    "The phone ___ loudly.",
+    "He ___ the doorbell last night.",
+    "The bell ___ for lunch.",
+    "My alarm ___ at six.",
+    "She ___ her mother yesterday."
+  ],
+  "ring|part|rung": [
+    "The phone has already ___.",
+    "The bell has ___.",
+    "Has the doorbell been ___?",
+    "The church bells had ___.",
+    "I had ___ him many times."
+  ],
+  "steal|base|steal": [
+    "Please do not ___ from stores.",
+    "They often ___ apples.",
+    "He would never ___ anything.",
+    "Don't ___ my ideas.",
+    "It is wrong to ___."
+  ],
+  "steal|past|stole": [
+    "Someone ___ my bike last night.",
+    "He ___ the last cookie.",
+    "They ___ money from the bank.",
+    "The thief ___ her wallet.",
+    "She ___ a quick glance."
+  ],
+  "steal|part|stolen": [
+    "My bike was ___ last night.",
+    "Have you ever had anything ___?",
+    "The car has been ___.",
+    "Her wallet was ___ from her bag.",
+    "They discovered the money was ___."
+  ],
+  "tear|base|tear": [
+    "Don't ___ that paper.",
+    "I will ___ the old cloth.",
+    "Watch out, you might ___ it.",
+    "The dog likes to ___ things.",
+    "Please don't ___ the book."
+  ],
+  "tear|past|tore": [
+    "She accidentally ___ the letter.",
+    "He ___ his shirt on a nail.",
+    "The wind ___ the flag.",
+    "I ___ a page from the notebook.",
+    "They ___ down the old building."
+  ],
+  "tear|part|torn": [
+    "My shirt is ___ now.",
+    "The paper has been ___.",
+    "His trousers were ___.",
+    "The pages had been ___ out.",
+    "Have you ever had a ___ book?"
+  ],
+  "strike|base|strike": [
+    "The clock will ___ soon.",
+    "Don't ___ the dog.",
+    "The workers plan to ___.",
+    "The lightning can ___ twice.",
+    "He tries to ___ the ball."
+  ],
+  "strike|past|struck": [
+    "The clock ___ midnight.",
+    "Lightning ___ the tree.",
+    "The car ___ the wall.",
+    "He ___ the table with his hand.",
+    "They ___ a deal yesterday."
+  ],
+  "strike|part|struck": [
+    "The tree was ___ by lightning.",
+    "He has been ___ by bad luck.",
+    "The clock had ___ ten.",
+    "The car had ___ a pole.",
+    "We were ___ by his words."
+  ],
+  "learn|base|learn": [
+    "I want to ___ English.",
+    "You can ___ a new skill.",
+    "Kids ___ quickly.",
+    "We will ___ something new today.",
+    "Do you like to ___?"
+  ],
+  "learn|past|learnt": [
+    "I ___ a lot yesterday.",
+    "She ___ how to swim.",
+    "He ___ his lesson well.",
+    "They ___ from their mistakes.",
+    "We ___ the new words easily."
+  ],
+  "learn|part|learnt": [
+    "I have ___ much from you.",
+    "He has ___ many languages.",
+    "She had ___ the truth.",
+    "They have ___ their lesson.",
+    "Has he ___ to drive yet?"
+  ],
+  "stick|base|stick": [
+    "Please ___ this photo here.",
+    "Don't ___ your tongue out.",
+    "This gum will ___ to your shoe.",
+    "Let's ___ to the plan.",
+    "I need to ___ the label."
+  ],
+  "stick|past|stuck": [
+    "The car got ___ in the mud.",
+    "My key ___ in the lock.",
+    "She ___ the stamp on the letter.",
+    "He felt ___ in the job.",
+    "We ___ together during tough times."
+  ],
+  "stick|part|stuck": [
+    "The mud had ___ to my shoes.",
+    "My key is ___ in the lock.",
+    "He has been ___ there for hours.",
+    "The pictures were ___ on the wall.",
+    "They were ___ in traffic."
+  ],
+  "shake|base|shake": [
+    "Don't ___ the table.",
+    "I will ___ your hand.",
+    "The dog likes to ___.",
+    "You should ___ the bottle.",
+    "Let's ___ hands on it."
+  ],
+  "shake|past|shook": [
+    "He ___ my hand firmly.",
+    "The dog ___ itself dry.",
+    "The earthquake ___ the building.",
+    "She ___ her head 'no'.",
+    "I ___ the dust off the rug."
+  ],
+  "shake|part|shaken": [
+    "He was visibly ___ by the news.",
+    "The cocktail was well ___.",
+    "She has been ___ by the event.",
+    "The tree was ___ by the wind.",
+    "He had never been so ___."
+  ],
+  "feed|base|feed": [
+    "Please ___ the cat.",
+    "I need to ___ the baby.",
+    "Don't ___ the birds here.",
+    "We always ___ our dog.",
+    "You can ___ the fish now."
+  ],
+  "feed|past|fed": [
+    "She ___ the cat this morning.",
+    "He ___ the baby an hour ago.",
+    "We ___ the ducks yesterday.",
+    "I ___ my dog his dinner.",
+    "They ___ the poor people."
+  ],
+  "feed|part|fed": [
+    "The cat has been ___.",
+    "The baby was ___ by his mother.",
+    "I have already ___ the fish.",
+    "Have you ___ the animals yet?",
+    "They had been well ___."
+  ],
+  "throw|base|throw": [
+    "Please ___ the ball.",
+    "Don't ___ trash on the ground.",
+    "I will ___ the old paper away.",
+    "Can you ___ me the keys?",
+    "He likes to ___ rocks."
+  ],
+  "throw|past|threw": [
+    "He ___ the ball very far.",
+    "She ___ her old shoes away.",
+    "The boy ___ a stone at the tree.",
+    "I ___ the keys to him.",
+    "They ___ a party last night."
+  ],
+  "throw|part|thrown": [
+    "The ball was ___ to him.",
+    "He has ___ his coat on the bed.",
+    "The dice had been ___.",
+    "Have you ___ away the trash?",
+    "She felt ___ into the situation."
+  ],
+  "bleed|base|bleed": [
+    "My nose might ___.",
+    "If you cut yourself, you will ___.",
+    "The wound can ___ a lot.",
+    "Don't let it ___ too much.",
+    "He is careful not to ___."
+  ],
+  "bleed|past|bled": [
+    "His nose ___ for five minutes.",
+    "The cut ___ a little.",
+    "She ___ after the accident.",
+    "My finger ___ when I cut it.",
+    "The wound had ___ heavily."
+  ],
+  "bleed|part|bled": [
+    "He has ___ a lot of blood.",
+    "The cut has ___ for hours.",
+    "I had never ___ before.",
+    "She was ___ dry.",
+    "The patient has ___ internally."
+  ],
+  "shoot|base|shoot": [
+    "Don't ___ the messenger.",
+    "They like to ___ hoops.",
+    "The camera will ___ good pictures.",
+    "He wants to ___ a film.",
+    "I will ___ some photos."
+  ],
+  "shoot|past|shot": [
+    "He ___ the ball into the net.",
+    "The hunter ___ a deer.",
+    "The photographer ___ many pictures.",
+    "They ___ a movie last year.",
+    "The police ___ the suspect."
+  ],
+  "shoot|part|shot": [
+    "The ball was ___ from afar.",
+    "He had been ___ in the leg.",
+    "The film has been ___.",
+    "The deer was ___ by a hunter.",
+    "They had ___ many scenes."
+  ],
+  "wake|base|wake": [
+    "Please ___ me up at seven.",
+    "Don't ___ the baby.",
+    "I need to ___ early tomorrow.",
+    "She always wants to ___ late.",
+    "Can you ___ your brother?"
+  ],
+  "wake|past|woke": [
+    "I ___ up early today.",
+    "He ___ up from a bad dream.",
+    "She ___ the children gently.",
+    "The noise ___ me up.",
+    "We ___ to the sound of birds."
+  ],
+  "wake|part|woken": [
+    "I have been ___ up early.",
+    "She had been ___ by the storm.",
+    "The children were ___ by the bell.",
+    "Have you been ___ yet?",
+    "He had never been ___ so rudely."
+  ],
+  "dig|base|dig": [
+    "We need to ___ a hole.",
+    "The dog likes to ___ in the garden.",
+    "Don't ___ too deep.",
+    "They will ___ for treasure.",
+    "I need to ___ a ditch."
+  ],
+  "dig|past|dug": [
+    "He ___ a big hole.",
+    "The dog ___ up the bone.",
+    "They ___ for gold for hours.",
+    "We ___ a trench yesterday.",
+    "She ___ her heels in."
+  ],
+  "dig|part|dug": [
+    "The hole has been ___.",
+    "The dog had ___ up the garden.",
+    "They have ___ a deep well.",
+    "The ground was ___ up.",
+    "We had ___ for a long time."
+  ],
+  "teach|base|teach": [
+    "I will ___ you English.",
+    "She wants to ___ children.",
+    "He can ___ you how to swim.",
+    "They ___ at the university.",
+    "Who will ___ the class?"
+  ],
+  "teach|past|taught": [
+    "She ___ English for years.",
+    "He ___ me how to drive.",
+    "They ___ well last semester.",
+    "My mother ___ me to cook.",
+    "The professor ___ a great lesson."
+  ],
+  "teach|part|taught": [
+    "He has ___ many students.",
+    "She had been ___ by her father.",
+    "I have ___ this subject before.",
+    "They were ___ a valuable lesson.",
+    "The class was ___ by a new teacher."
+  ],
+  "burn|base|burn": [
+    "Don't let the fire ___ out.",
+    "The wood will ___ quickly.",
+    "This candle will ___ all night.",
+    "Be careful not to ___ yourself.",
+    "I need to ___ some leaves."
+  ],
+  "burn|past|burnt": [
+    "The toast was ___ this morning.",
+    "He accidentally ___ his hand.",
+    "The building ___ down completely.",
+    "The sun ___ her skin.",
+    "The fire ___ for hours."
+  ],
+  "burn|part|burnt": [
+    "The food is ___.",
+    "He had ___ all the letters.",
+    "My hand has been ___.",
+    "The house was ___ to the ground.",
+    "She had never ___ anything before."
+  ],
+  "dream|base|dream": [
+    "I often ___ about flying.",
+    "What do you usually ___ about?",
+    "I hope I ___ of you.",
+    "Don't ___ your life away.",
+    "I will ___ big dreams."
+  ],
+  "dream|past|dreamt": [
+    "I ___ about you last night.",
+    "She ___ of a beautiful house.",
+    "He ___ he could fly.",
+    "We both ___ the same thing.",
+    "I ___ a strange dream."
+  ],
+  "dream|part|dreamt": [
+    "I have ___ of this moment.",
+    "She had ___ that dream before.",
+    "He has ___ many times.",
+    "Have you ever ___ of winning?",
+    "The future has been ___ of."
+  ],
+  "win|base|win": [
+    "I hope we ___ the game.",
+    "Who do you think will ___?",
+    "We always play to ___.",
+    "They want to ___ the prize.",
+    "I try to ___ every time."
+  ],
+  "win|past|won": [
+    "We ___ the game yesterday.",
+    "She ___ the first prize.",
+    "He ___ the election.",
+    "They ___ by a large margin.",
+    "I ___ a small amount of money."
+  ],
+  "win|part|won": [
+    "We have ___ three games.",
+    "She has ___ many awards.",
+    "The trophy was ___ by our team.",
+    "He had ___ his battle.",
+    "They have never ___ before."
+  ],
+  "catch|base|catch": [
+    "Can you ___ the ball?",
+    "I want to ___ the bus.",
+    "Don't try to ___ a cold.",
+    "We need to ___ a fish.",
+    "He will ___ a taxi."
+  ],
+  "catch|past|caught": [
+    "I ___ the ball easily.",
+    "She ___ the last bus.",
+    "He ___ a cold last week.",
+    "We ___ a big fish.",
+    "The police ___ the thief."
+  ],
+  "catch|part|caught": [
+    "I have ___ a big fish.",
+    "She was ___ in the rain.",
+    "He has ___ a bad cold.",
+    "The thief was ___ by the police.",
+    "They had ___ the train."
+  ],
+  "enjoy|base|enjoy": [
+    "I ___ playing games.",
+    "We always ___ good food.",
+    "Do you ___ your holiday?",
+    "They ___ reading books.",
+    "Kids ___ ice cream a lot."
+  ],
+  "enjoy|past|enjoyed": [
+    "She ___ the party yesterday.",
+    "We ___ our meal very much.",
+    "They ___ the film last night.",
+    "He ___ his trip to Paris.",
+    "I ___ playing football then."
+  ],
+  "fail|base|fail": [
+    "Don't ___ the exam.",
+    "Many people ___ to try.",
+    "I hope I don't ___.",
+    "He might ___ the test.",
+    "You should not ___."
+  ],
+  "fail|past|failed": [
+    "He ___ the exam last week.",
+    "She ___ her driving test.",
+    "The old car engine ___.",
+    "We ___ to reach our goal.",
+    "My plan ___ completely."
+  ],
+  "cover|base|cover": [
+    "Please ___ the book.",
+    "Can you ___ the food?",
+    "We need to ___ our costs.",
+    "Use a blanket to ___ her.",
+    "The snow will ___ the ground."
+  ],
+  "cover|past|covered": [
+    "She ___ her face.",
+    "Snow ___ the mountains.",
+    "He ___ the story.",
+    "The table was ___ with food.",
+    "We ___ a lot of ground."
+  ],
+  "join|base|join": [
+    "Do you want to ___ us?",
+    "She will ___ the team.",
+    "Let's ___ hands together.",
+    "I want to ___ the club.",
+    "They can ___ the group."
+  ],
+  "join|past|joined": [
+    "He ___ the army in 2020.",
+    "We ___ the party late.",
+    "She ___ a new company.",
+    "They ___ hands and sang.",
+    "I ___ the club last year."
+  ],
+  "wash|base|wash": [
+    "I need to ___ my hands.",
+    "Please ___ the dishes.",
+    "Let's ___ the car.",
+    "She will ___ her hair.",
+    "They always ___ their clothes."
+  ],
+  "wash|past|washed": [
+    "He ___ the car yesterday.",
+    "She ___ her hair quickly.",
+    "I ___ my hands thoroughly.",
+    "We ___ the clothes last night.",
+    "They ___ the vegetables."
+  ],
+  "avoid|base|avoid": [
+    "Try to ___ mistakes.",
+    "You should ___ that street.",
+    "I always ___ bad food.",
+    "They ___ busy places.",
+    "Please ___ any problems."
+  ],
+  "avoid|past|avoided": [
+    "He ___ the problem well.",
+    "She ___ the busy road.",
+    "They ___ me at the party.",
+    "We ___ a big mistake.",
+    "I ___ him yesterday."
+  ],
+  "prepare|base|prepare": [
+    "We must ___ for the trip.",
+    "She needs to ___ dinner.",
+    "Let's ___ the presentation.",
+    "I will ___ the report.",
+    "They ___ for exams."
+  ],
+  "prepare|past|prepared": [
+    "She ___ dinner last night.",
+    "He ___ for the test.",
+    "They ___ the room.",
+    "We ___ a good meal.",
+    "I ___ my speech yesterday."
+  ],
+  "dry|base|dry": [
+    "Please ___ the dishes.",
+    "Let's ___ our clothes.",
+    "Can you ___ your hair?",
+    "I need to ___ my hands.",
+    "The sun will ___ it."
+  ],
+  "dry|past|dried": [
+    "She ___ her hair quickly.",
+    "The clothes ___ fast.",
+    "I ___ my hands thoroughly.",
+    "He ___ the dishes.",
+    "The paint ___ quickly."
+  ],
+  "practice|base|practice": [
+    "You should ___ every day.",
+    "Let's ___ English speaking.",
+    "They need to ___ more.",
+    "I always ___ my guitar.",
+    "We will ___ after school."
+  ],
+  "practice|past|practiced": [
+    "He ___ the piano a lot.",
+    "She ___ her speech.",
+    "We ___ our presentation.",
+    "They ___ their new song.",
+    "I ___ for hours yesterday."
+  ],
+  "increase|base|increase": [
+    "We need to ___ sales.",
+    "Prices might ___ soon.",
+    "Try to ___ your speed.",
+    "They want to ___ staff.",
+    "The number will ___."
+  ],
+  "increase|past|increased": [
+    "Prices ___ last month.",
+    "Sales ___ dramatically.",
+    "His heart rate ___.",
+    "The company ___ profits.",
+    "The population ___ by much."
+  ],
+  "pass|base|pass": [
+    "I hope I ___ the exam.",
+    "Can you ___ me the salt?",
+    "They want to ___ the ball.",
+    "We must ___ this level.",
+    "She needs to ___ by."
+  ],
+  "pass|past|passed": [
+    "He ___ his driving test.",
+    "She ___ the ball to him.",
+    "We ___ the store quickly.",
+    "The car just ___ us.",
+    "I ___ the exam easily."
+  ],
+  "rely|base|rely": [
+    "Can we ___ on him?",
+    "I ___ on your help.",
+    "Don't ___ on luck.",
+    "They ___ on public transport.",
+    "You must ___ on yourself."
+  ],
+  "rely|past|relied": [
+    "She ___ on her friends.",
+    "We ___ on good weather.",
+    "He ___ on his memory.",
+    "They ___ on me for help.",
+    "I ___ on your promise."
+  ],
+  "carry|base|carry": [
+    "I can ___ the bag.",
+    "They will ___ the boxes.",
+    "Can you ___ this for me?",
+    "Let's ___ the shopping.",
+    "She needs to ___ water."
+  ],
+  "carry|past|carried": [
+    "He ___ the heavy bag.",
+    "She ___ her baby.",
+    "We ___ the furniture.",
+    "They ___ a big box.",
+    "The wind ___ the sound."
+  ],
+  "cancel|base|cancel": [
+    "We must ___ the meeting.",
+    "They might ___ the trip.",
+    "Please ___ my order.",
+    "I want to ___ my plans.",
+    "Can you ___ the flight?"
+  ],
+  "cancel|past|canceled": [
+    "The flight was ___.",
+    "They ___ the concert.",
+    "We ___ the picnic.",
+    "He ___ his appointment.",
+    "She ___ the reservation."
+  ],
+  "reduce|base|reduce": [
+    "We need to ___ waste.",
+    "They want to ___ prices.",
+    "Try to ___ your speed.",
+    "You can ___ your stress.",
+    "Let's ___ our expenses."
+  ],
+  "reduce|past|reduced": [
+    "The store ___ prices.",
+    "My stress has ___.",
+    "They ___ the amount.",
+    "He ___ his working hours.",
+    "We ___ our debt."
+  ],
+  "repair|base|repair": [
+    "I need to ___ my bike.",
+    "Can you ___ the car?",
+    "They will ___ the roof.",
+    "We should ___ the fence.",
+    "He wants to ___ his phone."
+  ],
+  "repair|past|repaired": [
+    "He ___ his car yesterday.",
+    "She ___ the broken chair.",
+    "We ___ the roof quickly.",
+    "They ___ the old machine.",
+    "I ___ my bike last week."
+  ],
+  "manage|base|manage": [
+    "Can you ___ this task?",
+    "I always ___ my time.",
+    "She can ___ the team.",
+    "We need to ___ our money.",
+    "He tries to ___ stress."
+  ],
+  "manage|past|managed": [
+    "He ___ the project well.",
+    "She ___ to finish it.",
+    "We ___ our budget.",
+    "They ___ the crisis.",
+    "I ___ my time easily."
+  ],
+  "support|base|support": [
+    "I will always ___ you.",
+    "We need to ___ the team.",
+    "They ___ local businesses.",
+    "Can you ___ my idea?",
+    "The pillars ___ the roof."
+  ],
+  "support|past|supported": [
+    "He ___ his family.",
+    "We ___ the charity.",
+    "The team ___ their leader.",
+    "She ___ my decision.",
+    "They ___ the new law."
+  ],
+  "succeed|base|succeed": [
+    "We hope to ___.",
+    "You can ___ in life.",
+    "I want to ___ at this.",
+    "They will ___ in their goals.",
+    "He tries to ___."
+  ],
+  "succeed|past|succeeded": [
+    "He ___ in his goal.",
+    "She ___ at the exam.",
+    "They ___ in their plan.",
+    "We ___ with the project.",
+    "I ___ finally."
+  ],
+  "include|base|include": [
+    "Does it ___ tax?",
+    "Please ___ me in the list.",
+    "We will ___ a map.",
+    "They want to ___ everyone.",
+    "The price does ___ it."
+  ],
+  "include|past|included": [
+    "The price ___ tax.",
+    "She ___ me in her plan.",
+    "We ___ a lot of details.",
+    "They ___ all their friends.",
+    "The book ___ many photos."
+  ],
+  "split|base|split": [
+    "My friend and I will ___ the bill.",
+    "Please ___ the apple in half.",
+    "They usually ___ their profits equally.",
+    "Can you ___ the log for me?",
+    "We need to ___ the group into two."
+  ],
+  "split|past|split": [
+    "He ___ the wood yesterday.",
+    "We ___ the cake into small pieces.",
+    "The company ___ into two parts.",
+    "They ___ the money among themselves.",
+    "She accidentally ___ her pants."
+  ],
+  "split|part|split": [
+    "The cake has been ___ unevenly.",
+    "He has ___ the costs with me.",
+    "They have ___ up for good.",
+    "The group was ___ into teams.",
+    "Has the bill been ___ yet?"
+  ],
+  "spread|base|spread": [
+    "Please ___ the butter on toast.",
+    "They want to ___ joy.",
+    "I will ___ the news quickly.",
+    "Can you ___ the blanket here?",
+    "Don't ___ rumors, please."
+  ],
+  "spread|past|spread": [
+    "She ___ the jam on her bread.",
+    "The news ___ very fast.",
+    "He ___ his arms wide.",
+    "The fire ___ quickly in the forest.",
+    "The butter was ___ thinly."
+  ],
+  "spread|part|spread": [
+    "The rumour has ___ everywhere.",
+    "The news was ___ by media.",
+    "Has the blanket been ___?",
+    "The butter had been ___ evenly.",
+    "Fear has ___ through the town."
+  ],
+  "bet|base|bet": [
+    "I ___ you can't do it.",
+    "Let's ___ on the game.",
+    "Do you want to ___ with me?",
+    "He will always ___ on his team.",
+    "I ___ my money on that horse."
+  ],
+  "bet|past|bet": [
+    "He ___ all his money.",
+    "They ___ on the wrong horse.",
+    "She ___ that it would rain.",
+    "I ___ you would win.",
+    "We ___ five dollars."
+  ],
+  "bet|part|bet": [
+    "He has ___ on every race.",
+    "Money had been ___ on the outcome.",
+    "They have ___ their last dollar.",
+    "Has the match been ___ on?",
+    "We had ___ on the wrong team."
+  ],
+  "lend|base|lend": [
+    "Can you ___ me a pen?",
+    "I will ___ you my book.",
+    "Please ___ me some money.",
+    "They often ___ each other things.",
+    "We can ___ you our car."
+  ],
+  "lend|past|lent": [
+    "She ___ me her umbrella.",
+    "He ___ his car to a friend.",
+    "The bank ___ him a lot.",
+    "I ___ you money yesterday.",
+    "They ___ us their tools."
+  ],
+  "lend|part|lent": [
+    "I have ___ him my jacket.",
+    "The book has been ___ out.",
+    "Money was ___ by the bank.",
+    "Have you ever ___ a car?",
+    "It has been ___ for a week."
+  ],
+  "hurt|base|hurt": [
+    "Don't ___ yourself with that knife.",
+    "Words can ___ feelings.",
+    "Does your arm still ___?",
+    "I don't want to ___ you.",
+    "Be careful not to ___ him."
+  ],
+  "hurt|past|hurt": [
+    "The fall ___ his leg.",
+    "She ___ her knee yesterday.",
+    "My back ___ after the work.",
+    "The bad news really ___ him.",
+    "He ___ himself playing football."
+  ],
+  "hurt|part|hurt": [
+    "My feelings were ___ by her words.",
+    "He has ___ his arm badly.",
+    "The plant was ___ by the cold.",
+    "Have you ever been ___?",
+    "It has been ___ for a long time."
+  ],
+  "smell|base|smell": [
+    "The flowers ___ wonderful.",
+    "Can you ___ the smoke?",
+    "Dogs can ___ very well.",
+    "What does that food ___ like?",
+    "I ___ something burning."
+  ],
+  "smell|past|smelt": [
+    "He ___ the flowers in the garden.",
+    "The food ___ delicious yesterday.",
+    "I ___ smoke coming from next door.",
+    "She ___ the burning toast.",
+    "The old socks ___ bad."
+  ],
+  "smell|part|smelt": [
+    "The cake has been ___ amazing.",
+    "It has ___ strongly of garlic.",
+    "The bread was ___ before baking.",
+    "Has the perfume been ___ yet?",
+    "The air had ___ fresh and clean."
+  ],
+  "shut|base|shut": [
+    "Please ___ the door quietly.",
+    "They always ___ their windows.",
+    "I will ___ my eyes now.",
+    "Don't ___ the gate so hard.",
+    "The shops ___ at 6 PM."
+  ],
+  "shut|past|shut": [
+    "He ___ the door firmly.",
+    "The store ___ early yesterday.",
+    "She ___ her book and left.",
+    "We ___ all the windows.",
+    "My computer screen ___ down."
+  ],
+  "shut|part|shut": [
+    "The door was ___ by the wind.",
+    "He has ___ his eyes forever.",
+    "Has the window been ___?",
+    "The shop is ___ for today.",
+    "All the doors were ___ tight."
+  ],
+  "cost|base|cost": [
+    "How much does this ___?",
+    "It will ___ a lot of money.",
+    "These shoes ___ too much.",
+    "Some things ___ more than others.",
+    "A new car will ___ a fortune."
+  ],
+  "cost|past|cost": [
+    "The dinner ___ us fifty euros.",
+    "It ___ him dearly.",
+    "That mistake ___ them the game.",
+    "The car ___ a lot.",
+    "The repairs ___ too much."
+  ],
+  "cost|part|cost": [
+    "The project has ___ a lot.",
+    "It has always ___ too much.",
+    "The damages were ___ by the flood.",
+    "How much has it ___ so far?",
+    "This has ___ him his job."
+  ],
+  "hit|base|hit": [
+    "Don't ___ the ball too hard.",
+    "I will ___ the target.",
+    "The car might ___ a tree.",
+    "They usually ___ the gym early.",
+    "Please ___ the button to start."
+  ],
+  "hit|past|hit": [
+    "He ___ the ball out of bounds.",
+    "The car ___ a tree.",
+    "She accidentally ___ her head.",
+    "They ___ the road early.",
+    "The waves ___ the shore hard."
+  ],
+  "hit|part|hit": [
+    "The ball was ___ a long way.",
+    "He has ___ his head many times.",
+    "The city was ___ by a storm.",
+    "Has the target been ___?",
+    "It has been ___ by lightning."
+  ],
+  "save|base|save": [
+    "We must ___ energy.",
+    "Please ___ your work now.",
+    "Can you ___ a seat?",
+    "I want to ___ money.",
+    "They always ___ time."
+  ],
+  "save|past|saved": [
+    "He ___ the document.",
+    "She ___ some money.",
+    "We ___ time yesterday.",
+    "The cat was ___ by us.",
+    "They ___ their food."
+  ],
+  "check|base|check": [
+    "Please ___ your email.",
+    "I need to ___ the time.",
+    "Can you ___ my answers?",
+    "We should ___ the door.",
+    "They always ___ their list."
+  ],
+  "check|past|checked": [
+    "He ___ the report.",
+    "She ___ her phone.",
+    "We ___ the weather.",
+    "My work was ___ by him.",
+    "They ___ all the items."
+  ],
+  "protect|base|protect": [
+    "We must ___ our planet.",
+    "This cream will ___ you.",
+    "How do I ___ my data?",
+    "They want to ___ their home.",
+    "You should ___ your eyes."
+  ],
+  "protect|past|protected": [
+    "The wall ___ the city.",
+    "Her secret was ___.",
+    "We ___ the plants.",
+    "The money was ___ by a safe.",
+    "They ___ their children well."
+  ],
+  "review|base|review": [
+    "I need to ___ the notes.",
+    "Let's ___ the plan.",
+    "Can we ___ this report?",
+    "They always ___ their work.",
+    "You should ___ the rules."
+  ],
+  "review|past|reviewed": [
+    "He ___ the article.",
+    "She ___ her performance.",
+    "We ___ the contract.",
+    "The book was ___ by critics.",
+    "They ___ the details."
+  ],
+  "record|base|record": [
+    "I want to ___ a new song.",
+    "Please ___ your voice clearly.",
+    "They will ___ the meeting minutes.",
+    "We need to ___ this event.",
+    "Can you ___ your ideas?"
+  ],
+  "record|past|recorded": [
+    "She ___ a great video yesterday.",
+    "The meeting was ___ by him.",
+    "We ___ our conversation for later.",
+    "The camera ___ everything that happened.",
+    "He ___ his thoughts in a diary."
+  ],
+  "design|base|design": [
+    "I want to ___ a new logo.",
+    "Can you ___ a nice poster?",
+    "They will ___ a beautiful garden.",
+    "We need to ___ a strong bridge.",
+    "She helps to ___ websites."
+  ],
+  "design|past|designed": [
+    "He ___ a beautiful house last year.",
+    "The dress was ___ by an artist.",
+    "She ___ a new app for her phone.",
+    "They ___ a clever machine yesterday.",
+    "The car was ___ for speed."
+  ],
+  "communicate|base|communicate": [
+    "We need to ___ better with him.",
+    "It is important to ___ clearly.",
+    "They try to ___ in English.",
+    "How do you ___ your feelings?",
+    "Animals ___ in many ways."
+  ],
+  "communicate|past|communicated": [
+    "He ___ his ideas clearly yesterday.",
+    "They ___ their decision to us.",
+    "The message was ___ effectively.",
+    "She ___ well with her team.",
+    "We ___ by email last week."
+  ],
+  "compare|base|compare": [
+    "Let's ___ the two options.",
+    "Can you ___ these prices?",
+    "I want to ___ my results.",
+    "It is hard to ___ them.",
+    "We can ___ the old with the new."
+  ],
+  "compare|past|compared": [
+    "She ___ the two books yesterday.",
+    "We ___ our notes carefully.",
+    "He ___ his work with hers.",
+    "They ___ prices before buying.",
+    "The teacher ___ the two essays."
+  ],
+  "note|base|note": [
+    "Please ___ this important date.",
+    "I need to ___ down her address.",
+    "You should ___ what he says.",
+    "Let's ___ the key points.",
+    "He wants to ___ the changes."
+  ],
+  "note|past|noted": [
+    "She ___ his response carefully.",
+    "They ___ the new rules yesterday.",
+    "We ___ the problem immediately.",
+    "He ___ the time of arrival.",
+    "The teacher ___ their progress."
+  ]
+}
