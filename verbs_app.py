@@ -2,8 +2,13 @@
 
 Two ways to practice, chosen in the setup screen:
   Reading   — fill the blank in a sentence (Gemini-generated) for each form.
-  Listening — hear each form (shuffled order) and type the word; on check,
-              the audio icon reveals which form it was.
+  Listening — hear each form (shuffled order) and type the word; each correct
+              word instantly reveals its Spanish meaning, conjugated
+              (eat -> comer, ate -> comí, eaten -> comido).
+
+The word list screen supports enabling/disabling words, creating custom
+words, deleting words, and picking a word up (→) to carry it with ↑↓ and
+drop it (←) anywhere — including into another block.
 """
 import tkinter as tk
 import tkinter.font as tkfont
@@ -12,8 +17,8 @@ import random, json, threading
 import verbs_audio as audio
 from verbs_phrases import Cache, GEMINI_OK
 from verbs_data import (
-    ALT_FORMS, THEMES, PTR, BLOCK, FEED_OK, FEED_BAD, BASE_W, BASE_H,
-    AUDIO_ICON, PROG_F, CONF_F, VOICES, COLS, CATS, SPIN,
+    ALT_FORMS, SPANISH_FORMS, THEMES, PTR, BLOCK, FEED_OK, FEED_BAD,
+    BASE_W, BASE_H, AUDIO_ICON, PROG_F, CONF_F, VOICES, COLS, CATS, SPIN,
 )
 
 
@@ -31,14 +36,14 @@ class App:
         self.C      = THEMES.get(self.prog.get("theme","light"), THEMES["light"])
         w.config(bg=self.C["BG"])
         self.FF     = self._pick_family()
-        self._audio = {}   # col -> mp3 bytes (pre-generated)
+        self._audio = {}   # col -> cached mp3 path
 
         # session state
         self.cat = "regular"; self.cols = ["base","past"]; self.cur_cols = []
         self.cst = {"base":True,"past":True,"part":False}
         self.sblocks = []; self._starts = []
         self.bidx = self.vidx = 0
-        self.ok_n = self.bad_n = self.blk_ok = self.blk_bad = 0
+        self.ok_n = self.bad_n = self.blk_ok = self.blk_bad = self.streak = 0
         self.phrases = {}; self.entries = {}; self.icons = {}; self.fb_id = None
         self.locked = False; self._vt = 0
         # per-screen cursors
@@ -46,12 +51,14 @@ class App:
         self.sr = []; self._pending = None
         self._anim_i = 0; self.screen = "menu"
         self._last_size = (0,0); self._resize_job = None
+        # word-list editor state
+        self.wd_blocks = []; self.wd_carry = None; self.wd_del_pending = None
 
         # clean cached audio of words that no longer exist in the verb lists
         if audio.TTS_OK:
             valid = set()
-            for info in CATS.values():
-                for v in info["verbs"]:
+            for cat in CATS:
+                for v in self._vdict(cat).values():
                     for raw in v[1:]:
                         valid.update(self._answer_parts(raw))
             threading.Thread(target=audio.prune, args=(valid,), daemon=True).start()
@@ -60,7 +67,8 @@ class App:
         for key, fn in [("<Up>",self._up),("<Down>",self._dn),("<Left>",self._lt),
                         ("<Right>",self._rt),("<Return>",self._en),
                         ("<space>",self._sp),("<Escape>",self._es),
-                        ("<Key-a>",self._ka)]:
+                        ("<Key-a>",self._ka),("<Key-n>",self._kn),
+                        ("<Delete>",self._kdel)]:
             w.bind(key, fn)
         w.bind("<Configure>", self._on_resize)
         self._init_fonts()
@@ -113,6 +121,14 @@ class App:
         if obj.get("a"): return obj["a"]
         idx_map = {"base":1,"past":2,"part":3}
         return self._cur_verb()[idx_map[col]]
+
+    def _meaning(self, col, verb=None):
+        """Spanish meaning of the given form: eat->comer, ate->comí, eaten->comido."""
+        verb = verb or self._cur_verb()
+        if col == "base": return verb[0]
+        forms = SPANISH_FORMS.get(verb[1])
+        if not forms: return verb[0]
+        return forms[0] if col == "past" else forms[1]
 
     # ── Progress / config ─────────────────────────────────────────────────────
     def _load_prog(self):
@@ -167,14 +183,41 @@ class App:
         m = self.prog.get("mode", "read")
         return m if (m == "read" or audio.TTS_OK) else "read"
 
-    # ── Word layout (blocks + enabled/disabled words) ─────────────────────────
+    # ── Word data: built-ins − deleted + custom ───────────────────────────────
+    def _custom(self, cat=None):
+        """User-created verb rows: [es, base, past] or [es, base, past, part]."""
+        p = self._cat_prog(cat)
+        c = p.get("custom")
+        if not isinstance(c, list): c = []
+        c = [v for v in c if isinstance(v, list) and len(v) >= 3
+             and all(isinstance(s, str) and s.strip() for s in v[:3])]
+        p["custom"] = c
+        return c
+
+    def _deleted(self, cat=None):
+        """Names of built-in verbs the user removed."""
+        cat = cat or self.cat
+        builtin = {v[1] for v in CATS[cat]["verbs"]}
+        p = self._cat_prog(cat)
+        d = {n for n in (p.get("deleted") or []) if n in builtin}
+        p["deleted"] = sorted(d)
+        return d
+
     def _vdict(self, cat=None):
-        return {v[1]: v for v in CATS[cat or self.cat]["verbs"]}
+        cat = cat or self.cat
+        dele = self._deleted(cat)
+        has_part = CATS[cat]["has_part"]
+        d = {v[1]: v for v in CATS[cat]["verbs"] if v[1] not in dele}
+        for v in self._custom(cat):
+            row = list(v[:4] if has_part else v[:3])
+            if has_part and len(row) == 3: row.append(row[2])
+            d[row[1]] = row
+        return d
 
     def _layout(self, cat=None):
         """Blocks of verb base-names for a category; reconciled and persisted."""
         cat = cat or self.cat
-        names = [v[1] for v in CATS[cat]["verbs"]]
+        names = list(self._vdict(cat))
         known = set(names)
         p = self._cat_prog(cat)
         lay, seen = [], set()
@@ -207,7 +250,8 @@ class App:
     def _enabled_blocks(self, cat=None):
         """Layout blocks with disabled words removed (verb rows, empties kept)."""
         vd, ds = self._vdict(cat), self._disabled(cat)
-        return [[vd[n] for n in blk if n not in ds] for blk in self._layout(cat)]
+        return [[vd[n] for n in blk if n not in ds and n in vd]
+                for blk in self._layout(cat)]
 
     def _enabled_count(self, cat=None):
         return sum(len(b) for b in self._enabled_blocks(cat))
@@ -227,7 +271,9 @@ class App:
                         bg=bg or C["BG"], fg=fg or C["FG2"], **kw)
 
     def _hint(self, parent, text):
-        self._lbl(parent, text, 9, self.C["FG3"]).place(relx=.5, rely=.97, anchor="center")
+        l = self._lbl(parent, text, 9, self.C["FG3"])
+        l.place(relx=.5, rely=.97, anchor="center")
+        return l
 
     def _card(self, parent, **kw):
         C = self.C
@@ -288,7 +334,7 @@ class App:
         self._hint(f,"↑ ↓ ← →  Navigate      Enter  Select      F8  Always on top")
 
     def _menu_stats(self, cat):
-        total = len(CATS[cat]["verbs"]); en = self._enabled_count(cat)
+        total = len(self._vdict(cat)); en = self._enabled_count(cat)
         comp = min(self._comp(cat), en)
         nblk = sum(1 for b in self._enabled_blocks(cat) if b)
         return f"{en} of {total} words selected\n{comp}/{en} done  ·  {nblk} blocks"
@@ -458,7 +504,7 @@ class App:
         else:
             self.su_h.config(text="")
 
-        self.su_w.config(text=f"Edit word list   ({total}/{len(info['verbs'])} selected)")
+        self.su_w.config(text=f"Edit word list   ({total}/{len(self._vdict())} selected)")
         self.su_c.config(text=f"Continue  ({comp}/{total})" if "ac" in self.sr else "")
         self.sb = max(0, min(self.sb, nblk-1)) if nblk else 0
         cur = blocks[self.sb] if blocks else []
@@ -508,29 +554,38 @@ class App:
         if k not in self.sr: return
         self.si = self.sr.index(k); self._draw_setup(); self._sel_setup()
 
-    # ── Words screen (choose words + blocks) ──────────────────────────────────
+    # ── Words screen (enable/disable, create, delete, carry words) ────────────
     def _bld_words(self):
         f = self.fr["words"]; C = self.C
         self.wd_t = self._lbl(f,"",16,C["FG"],bold=True)
-        self.wd_t.place(relx=.5,rely=.035,anchor="n")
+        self.wd_t.place(relx=.5,rely=.025,anchor="n")
         self.wd_sub = self._lbl(f,"",9,C["FG3"])
-        self.wd_sub.place(relx=.5,rely=.095,anchor="n")
+        self.wd_sub.place(relx=.5,rely=.085,anchor="n")
+        self.wd_add = self._lbl(f,"[ + New word ]",10,C["ACC_D"],cursor="hand2")
+        self.wd_add.place(relx=.06,rely=.135,anchor="w")
+        self.wd_add.bind("<Button-1>", lambda _: self._wd_new_dialog())
+        self.wd_res = self._lbl(f,"",10,C["ACC_D"],cursor="hand2")
+        self.wd_res.place(relx=.94,rely=.135,anchor="e")
+        self.wd_res.bind("<Button-1>", lambda _: self._wd_restore())
 
         self.wd_cv = tk.Canvas(f, bg=C["BG"], highlightthickness=0)
         self.wd_scr = tk.Scrollbar(f, orient="vertical", command=self.wd_cv.yview)
         self.wd_cv.config(yscrollcommand=self.wd_scr.set)
-        self.wd_cv.place(relx=.06, rely=.15, relwidth=.86, relheight=.77)
-        self.wd_scr.place(relx=.93, rely=.15, relwidth=.02, relheight=.77)
+        self.wd_cv.place(relx=.06, rely=.18, relwidth=.86, relheight=.74)
+        self.wd_scr.place(relx=.93, rely=.18, relwidth=.02, relheight=.74)
         self.wd_in = tk.Frame(self.wd_cv, bg=C["BG"])
         self.wd_win = self.wd_cv.create_window((0,0), window=self.wd_in, anchor="nw")
         self.wd_in.bind("<Configure>",
             lambda e: self.wd_cv.config(scrollregion=self.wd_cv.bbox("all") or (0,0,0,0)))
         self.wd_cv.bind("<Configure>",
             lambda e: self.wd_cv.itemconfig(self.wd_win, width=e.width))
-        self._hint(f,"Space/Click Toggle    ↑↓ Move    ←→ Move word to prev/next block    A Toggle block    Esc Done")
+        self._hint(f,"Space Toggle    → Pick up   ↑↓ Carry   ← Drop    N New    Del Delete    A Block on/off    Esc Done")
 
     def _open_words(self):
         self.wd_t.config(text=f"{CATS[self.cat]['title'].upper()} — WORD LIST")
+        self.wd_blocks = [list(b) for b in self._layout()]
+        if not self.wd_blocks: self.wd_blocks = [[]]
+        self.wd_carry = None; self.wd_del_pending = None
         self.wi = 0
         self._words_rebuild()
         self._show("words")
@@ -538,40 +593,46 @@ class App:
     def _words_rebuild(self, keep_name=None):
         C = self.C
         for ch in self.wd_in.winfo_children(): ch.destroy()
-        self.wd_rows = []; self.wd_heads = {}
-        vd, ds = self._vdict(), self._disabled()
-        lay = self._layout()
+        self.wd_rows = []; self.wd_recs = {}
+        self.wd_heads = {}; self.wd_head_frames = {}
+        vd = self._vdict()
+        customs = {v[1] for v in self._custom()}
         has_part = CATS[self.cat]["has_part"]
 
-        for bi, blk in enumerate(lay):
+        for bi, blk in enumerate(self.wd_blocks):
             head = tk.Frame(self.wd_in, bg=C["BG"]); head.pack(fill="x", pady=(10 if bi else 2, 3))
             hl = tk.Label(head, text="", font=(self.FF,11,"bold"), bg=C["BG"], fg=C["ACC_D"])
             hl.pack(side="left", padx=(2,8))
-            ha = tk.Label(head, text="[ toggle all ]", font=(self.FF,9), bg=C["BG"],
+            ha = tk.Label(head, text="[ all ]", font=(self.FF,9), bg=C["BG"],
                           fg=C["FG3"], cursor="hand2")
             ha.pack(side="left")
             ha.bind("<Button-1>", lambda _,b=bi: self._wd_toggle_block(b))
-            self.wd_heads[bi] = hl
+            self.wd_heads[bi] = hl; self.wd_head_frames[bi] = head
 
             for name in blk:
-                v = vd[name]
-                row = tk.Frame(self.wd_in, bg=C["BG"], cursor="hand2")
+                v = vd.get(name)
+                if not v: continue
+                row = tk.Frame(self.wd_in, bg=C["BG"], cursor="hand2",
+                               highlightthickness=0, highlightbackground=C["ACC"])
                 row.pack(fill="x", pady=1)
                 forms = " · ".join(v[1:4] if has_part else v[1:3])
                 l = tk.Label(row, text="", font=(self.FF,11), bg=C["BG"], anchor="w")
                 l.pack(side="left", padx=(14,0))
-                r = tk.Label(row, text=v[0], font=(self.FF,10), bg=C["BG"],
-                             fg=C["FG3"], anchor="e")
+                r = tk.Label(row, text=v[0]+("  •" if name in customs else ""),
+                             font=(self.FF,10), bg=C["BG"], fg=C["FG3"], anchor="e")
                 r.pack(side="right", padx=(0,14))
                 rec = {"name":name,"bi":bi,"frame":row,"l":l,"r":r,"forms":forms}
-                idx = len(self.wd_rows)
                 for w in (row,l,r):
-                    w.bind("<Button-1>", lambda _,i=idx: self._wd_click(i))
-                self.wd_rows.append(rec)
+                    w.bind("<Button-1>", lambda _,n=name: self._wd_click_name(n))
+                self.wd_rows.append(rec); self.wd_recs[name] = rec
 
-        if keep_name:
-            self.wi = next((i for i,r in enumerate(self.wd_rows)
-                            if r["name"]==keep_name), 0)
+        foot = tk.Label(self.wd_in, text="[ + Add block ]", font=(self.FF,10),
+                        bg=C["BG"], fg=C["FG3"], cursor="hand2")
+        foot.pack(pady=(14,8))
+        foot.bind("<Button-1>", lambda _: self._wd_add_block())
+
+        if keep_name and keep_name in self.wd_recs:
+            self.wi = self.wd_rows.index(self.wd_recs[keep_name])
         self.wi = max(0, min(self.wi, len(self.wd_rows)-1))
         self._wd_refresh_all()
         self._collect_fonts(self.wd_in); self._scale_fonts()
@@ -579,34 +640,48 @@ class App:
         if keep_name: self.win.after(50, lambda: self._wd_scroll_to(self.wi))
 
     def _wd_refresh_all(self):
-        ds = self._disabled(); lay = self._layout()
+        C = self.C; ds = self._disabled()
         for i in range(len(self.wd_rows)): self._wd_refresh_row(i)
         en_total = 0
-        for bi, blk in enumerate(lay):
+        for bi, blk in enumerate(self.wd_blocks):
             en = sum(1 for n in blk if n not in ds); en_total += en
-            self.wd_heads[bi].config(text=f"Block {bi+1}  —  {en}/{len(blk)} selected")
-        self.wd_sub.config(text=f"{en_total} words selected  ·  "
-                                f"{len(lay)} blocks  ·  changes are saved automatically")
+            if bi in self.wd_heads:
+                self.wd_heads[bi].config(text=f"Block {bi+1}  —  {en}/{len(blk)} selected")
+        if self.wd_carry:
+            self.wd_sub.config(fg=C["ACC_D"],
+                text=f"Carrying '{self.wd_carry}' — move it with ↑↓, drop it with ←")
+        else:
+            self.wd_sub.config(fg=C["FG3"],
+                text=f"{en_total} words selected  ·  {len(self.wd_blocks)} blocks  ·  "
+                     "changes are saved automatically")
+        dele = self._deleted()
+        self.wd_res.config(text=f"[ Restore {len(dele)} deleted ]" if dele else "")
 
     def _wd_refresh_row(self, i):
         C = self.C; rec = self.wd_rows[i]
         ds = self._disabled()
         on  = rec["name"] not in ds
         sel = (i == self.wi)
-        bg  = C["SEL"] if sel else C["BG"]
+        carried = (rec["name"] == self.wd_carry)
+        bg  = C["SEL"] if (sel or carried) else C["BG"]
         mark = "☑" if on else "☐"
-        rec["frame"].config(bg=bg)
+        rec["frame"].config(bg=bg, highlightthickness=1 if carried else 0)
+        rec["l"].pack_configure(padx=((34 if carried else 14), 0))
         rec["l"].config(text=f"{mark}  {rec['forms']}", bg=bg,
                         fg=(C["FG"] if sel else C["FG2"]) if on else C["FG3"])
         rec["r"].config(bg=bg, fg=C["FG2"] if sel else C["FG3"])
 
-    def _wd_click(self, i):
-        old = self.wi; self.wi = i
-        self._wd_refresh_row(old); self._wd_refresh_row(i)
+    def _wd_click_name(self, name):
+        if self.wd_carry: return
+        rec = self.wd_recs.get(name)
+        if not rec: return
+        old = self.wi; self.wi = self.wd_rows.index(rec)
+        self._wd_refresh_row(old); self._wd_refresh_row(self.wi)
         self._wd_toggle()
 
     def _wd_toggle(self):
-        if not self.wd_rows: return
+        if not self.wd_rows or self.wd_carry: return
+        self.wd_del_pending = None
         rec = self.wd_rows[self.wi]; ds = self._disabled()
         if rec["name"] in ds: ds.discard(rec["name"])
         else: ds.add(rec["name"])
@@ -614,29 +689,201 @@ class App:
         self._wd_refresh_all()
 
     def _wd_toggle_block(self, bi):
-        blk = self._layout()[bi]; ds = self._disabled()
+        if self.wd_carry: return
+        blk = self.wd_blocks[bi]; ds = self._disabled()
         if any(n in ds for n in blk): ds.difference_update(blk)
         else: ds.update(blk)
         self._set_disabled(ds)
         self._wd_refresh_all()
 
-    def _wd_move(self, d):
-        """Move selected word to the previous/next block."""
-        if not self.wd_rows: return
-        rec = self.wd_rows[self.wi]; lay = self._layout()
-        bi = rec["bi"]; tgt = bi + d
-        if tgt < 0: return
-        if tgt >= len(lay):
-            if len(lay[bi]) <= 1: return          # would just recreate same block
-            lay.append([])
-        lay[bi].remove(rec["name"])
-        lay[tgt].append(rec["name"])
-        self._cat_prog()["layout"] = [b for b in lay if b]
-        self._save_prog()
-        self._words_rebuild(keep_name=rec["name"])
+    # — carry a word (game-style move) —
+    def _wd_pick(self):
+        if not self.wd_rows or self.wd_carry: return
+        self.wd_carry = self.wd_rows[self.wi]["name"]
+        self.wd_del_pending = None
+        self._wd_refresh_all()
 
+    def _wd_drop(self):
+        if not self.wd_carry: return
+        self.wd_carry = None
+        self._wd_save_layout()
+        self._wd_refresh_all()
+
+    def _wd_pos(self, name):
+        for bi, blk in enumerate(self.wd_blocks):
+            if name in blk: return bi, blk.index(name)
+        return None, None
+
+    def _wd_carry_move(self, d):
+        name = self.wd_carry
+        bi, pos = self._wd_pos(name)
+        if bi is None: return
+        blk = self.wd_blocks[bi]
+        if d > 0:
+            if pos < len(blk)-1:
+                blk[pos], blk[pos+1] = blk[pos+1], blk[pos]
+            elif bi < len(self.wd_blocks)-1:
+                blk.pop(pos); self.wd_blocks[bi+1].insert(0, name)
+            else: return
+        else:
+            if pos > 0:
+                blk[pos-1], blk[pos] = blk[pos], blk[pos-1]
+            elif bi > 0:
+                blk.pop(pos); self.wd_blocks[bi-1].append(name)
+            else: return
+        self._wd_repack(name)
+
+    def _wd_repack(self, name):
+        """Re-pack the carried row at its new position (no full rebuild)."""
+        rec = self.wd_recs[name]
+        bi, pos = self._wd_pos(name)
+        rec["bi"] = bi
+        if pos > 0:
+            prev = self.wd_recs[self.wd_blocks[bi][pos-1]]["frame"]
+            rec["frame"].pack(fill="x", pady=1, after=prev)
+        else:
+            rec["frame"].pack(fill="x", pady=1, after=self.wd_head_frames[bi])
+        self.wd_rows = [self.wd_recs[n] for blk in self.wd_blocks
+                        for n in blk if n in self.wd_recs]
+        self.wi = self.wd_rows.index(rec)
+        self._wd_refresh_all()
+        self._wd_scroll_to(self.wi)
+
+    # — create / delete / restore —
+    def _wd_add_block(self):
+        if self.wd_carry: return
+        self.wd_blocks.append([])
+        keep = self.wd_rows[self.wi]["name"] if self.wd_rows else None
+        self._words_rebuild(keep_name=keep)
+
+    def _wd_create_word(self, row, bi):
+        """row = [es, base, past] (+[part] for irregular); insert into block bi."""
+        p = self._cat_prog()
+        c = self._custom(); c.append([s.strip() for s in row]); p["custom"] = c
+        if not self.wd_blocks: self.wd_blocks = [[]]
+        bi = max(0, min(bi, len(self.wd_blocks)-1))
+        self.wd_blocks[bi].append(row[1].strip())
+        self._wd_save_layout()
+        self._words_rebuild(keep_name=row[1].strip())
+        # generate its audio right away
+        if audio.TTS_OK:
+            voice = self._get_voice()
+            words = []
+            for raw in row[1:]: words.extend(self._answer_parts(raw))
+            def run():
+                for w_ in dict.fromkeys(words):
+                    try: audio.ensure(w_, voice)
+                    except Exception: pass
+            threading.Thread(target=run, daemon=True).start()
+
+    def _wd_new_dialog(self):
+        if self.screen != "words" or self.wd_carry: return
+        C = self.C; has_part = CATS[self.cat]["has_part"]
+        dlg = tk.Toplevel(self.win)
+        dlg.title("New word"); dlg.transient(self.win)
+        try: dlg.grab_set()
+        except tk.TclError: pass
+        dlg.resizable(False, False); dlg.config(bg=C["BG"], padx=24, pady=18)
+
+        tk.Label(dlg, text="Create your own word", font=(self.FF,13,"bold"),
+                 bg=C["BG"], fg=C["FG"]).grid(row=0, column=0, columnspan=3, pady=(0,12))
+        fields = [("Spanish (significado)", ""), ("English (base form)", ""),
+                  ("Past simple", "")] + ([("Past participle","")] if has_part else [])
+        entries = []
+        for i,(lbl,_) in enumerate(fields):
+            tk.Label(dlg, text=lbl, font=(self.FF,10), bg=C["BG"], fg=C["FG2"],
+                     anchor="w").grid(row=1+i, column=0, sticky="w", pady=3)
+            e = tk.Entry(dlg, font=(self.FF,11), width=20, bg=C["ENTRY"], fg=C["FG"],
+                         insertbackground=C["FG"], bd=0, highlightthickness=1,
+                         highlightbackground=C["BORDER"], highlightcolor=C["ACC"])
+            e.grid(row=1+i, column=1, columnspan=2, sticky="we", padx=(12,0), pady=3)
+            entries.append(e)
+
+        cur_bi = self.wd_rows[self.wi]["bi"] if self.wd_rows else 0
+        blk = [cur_bi]
+        rowN = 1+len(fields)
+        tk.Label(dlg, text="Block", font=(self.FF,10), bg=C["BG"], fg=C["FG2"],
+                 anchor="w").grid(row=rowN, column=0, sticky="w", pady=(8,3))
+        bl = tk.Label(dlg, text="", font=(self.FF,11), bg=C["BG"], fg=C["FG"])
+        bl.grid(row=rowN, column=1, pady=(8,3))
+        def bset(d):
+            blk[0] = max(0, min(blk[0]+d, len(self.wd_blocks)-1)); bdraw()
+        def bdraw():
+            bl.config(text=f"‹   {blk[0]+1} / {len(self.wd_blocks)}   ›")
+        bl.bind("<Button-1>", lambda e: bset(1 if e.x > bl.winfo_width()//2 else -1))
+        bdraw()
+
+        msg = tk.Label(dlg, text="", font=(self.FF,9), bg=C["BG"], fg=C["RED"])
+        msg.grid(row=rowN+1, column=0, columnspan=3, pady=(6,0))
+
+        def save(_=None):
+            vals = [e.get().strip() for e in entries]
+            eng  = [v.lower() for v in vals[1:]]
+            if not vals[0] or any(not v for v in eng):
+                msg.config(text="Fill in every field."); return
+            if any("|" in v for v in vals):
+                msg.config(text="The character | is not allowed."); return
+            if eng[0] in self._vdict():
+                msg.config(text=f"'{eng[0]}' already exists."); return
+            self._wd_create_word([vals[0]] + eng, blk[0])
+            dlg.destroy()
+        def cancel(_=None): dlg.destroy()
+
+        bf = tk.Frame(dlg, bg=C["BG"]); bf.grid(row=rowN+2, column=0, columnspan=3, pady=(12,0))
+        for txt, cmd in (("Save", save), ("Cancel", cancel)):
+            b = tk.Label(bf, text=txt, font=(self.FF,11), bg=C["CARD"], fg=C["FG"],
+                         padx=16, pady=7, cursor="hand2",
+                         highlightthickness=1, highlightbackground=C["BORDER"])
+            b.pack(side="left", padx=6)
+            b.bind("<Button-1>", cmd)
+        tk.Label(dlg, text="Tab Next field    Enter Save    Esc Cancel",
+                 font=(self.FF,8), bg=C["BG"], fg=C["FG3"])\
+            .grid(row=rowN+3, column=0, columnspan=3, pady=(10,0))
+
+        dlg.bind("<Return>", save); dlg.bind("<Escape>", cancel)
+        dlg.update_idletasks()
+        x = self.win.winfo_rootx()+(self.win.winfo_width() -dlg.winfo_width()) //2
+        y = self.win.winfo_rooty()+(self.win.winfo_height()-dlg.winfo_height())//2
+        dlg.geometry(f"+{max(x,0)}+{max(y,0)}")
+        entries[0].focus_set(); dlg.wait_window()
+
+    def _wd_delete(self):
+        if self.screen != "words" or not self.wd_rows or self.wd_carry: return
+        rec = self.wd_rows[self.wi]; name = rec["name"]
+        if self.wd_del_pending != name:
+            self.wd_del_pending = name
+            self.wd_sub.config(text=f"Delete '{name}'?  Press Delete again to confirm",
+                               fg=self.C["RED"])
+            return
+        self.wd_del_pending = None
+        nxt = (self.wd_rows[self.wi+1]["name"] if self.wi+1 < len(self.wd_rows)
+               else self.wd_rows[self.wi-1]["name"] if self.wi > 0 else None)
+        for blk in self.wd_blocks:
+            if name in blk: blk.remove(name); break
+        p = self._cat_prog()
+        customs = self._custom()
+        if any(v[1] == name for v in customs):
+            p["custom"] = [v for v in customs if v[1] != name]
+        else:
+            dele = self._deleted(); dele.add(name); p["deleted"] = sorted(dele)
+        ds = self._disabled(); ds.discard(name); p["disabled"] = sorted(ds)
+        self._wd_save_layout()
+        self._words_rebuild(keep_name=nxt)
+
+    def _wd_restore(self):
+        if self.screen != "words" or self.wd_carry: return
+        p = self._cat_prog()
+        if not p.get("deleted"): return
+        self._wd_save_layout()
+        p["deleted"] = []
+        self._save_prog()
+        self.wd_blocks = [list(b) for b in self._layout()]
+        self._words_rebuild()
+
+    # — navigation / persistence —
     def _wd_nav(self, d):
         if not self.wd_rows: return
+        self.wd_del_pending = None
         old = self.wi
         self.wi = max(0, min(self.wi+d, len(self.wd_rows)-1))
         if old != self.wi:
@@ -662,7 +909,13 @@ class App:
         d = -1 if (getattr(e,"num",0)==4 or getattr(e,"delta",0)>0) else 1
         self.wd_cv.yview_scroll(d, "units")
 
+    def _wd_save_layout(self):
+        self._cat_prog()["layout"] = [list(b) for b in self.wd_blocks if b]
+        self._save_prog()
+
     def _wd_done(self):
+        if self.wd_carry: self._wd_drop()
+        self._wd_save_layout()
         # selection may have shrunk: clamp progress
         self._set_comp(self._comp())
         self._show("setup"); self._build_sr()
@@ -704,7 +957,7 @@ class App:
                 if s <= comp: b0 = i
             if comp >= total: b0 = 0
 
-        self.ok_n = self.bad_n = 0
+        self.ok_n = self.bad_n = self.streak = 0
         self._start_block(b0)
 
     def _start_block(self, b0):
@@ -826,7 +1079,7 @@ class App:
         self.pr_ff.place(relx=.5, rely=.35, anchor="n", relwidth=.94, relheight=.50)
         self.pr_fb = self._lbl(f,"",13,C["GREEN"],bold=True)
         self.pr_fb.place(relx=.5,rely=.885,anchor="center")
-        self._hint(f,"Enter Next field / Check    ↑↓ Move    Esc Options")
+        self.pr_hint = self._hint(f,"")
 
     def _draw_bar(self):
         C = self.C; bar = self.pr_bar
@@ -851,15 +1104,19 @@ class App:
         done  = self._starts[self.bidx] + self.vidx
         self.pr_p.config(text=f"Block {self.bidx+1}/{len(self.sblocks)}   ·   "
                               f"Word {self.vidx+1}/{len(blk)}   ·   {done}/{total} total")
-        self.pr_s.config(text=f"✓ {self.ok_n}    ✗ {self.bad_n}")
+        stats = f"✓ {self.ok_n}    ✗ {self.bad_n}"
+        if self.streak >= 3: stats += f"    ·    {self.streak} in a row!"
+        self.pr_s.config(text=stats)
         self._draw_bar()
         self.pr_fb.config(text="")
         if listen:
             self.pr_v.config(text=AUDIO_ICON+"  Listen…")
             self.pr_vh.config(text=verb[0] if self.prog.get("listen_hint", True)
                               else "type each word you hear")
+            self.pr_hint.config(text="Enter Check    Space Hear again    ↑↓ Move    Esc Options")
         else:
             self.pr_v.config(text=verb[0]); self.pr_vh.config(text="")
+            self.pr_hint.config(text="Enter Next field / Check    ↑↓ Move    Esc Options")
 
         for ww in self.pr_ff.winfo_children(): ww.destroy()
         self.entries = {}; self.phrases = {}; self.icons = {}; self._audio = {}
@@ -949,6 +1206,12 @@ class App:
                         highlightbackground=C["BORDER"], highlightcolor=C["ACC"],
                         relief="flat")
 
+    def _focused_col(self):
+        es = [self.entries[k] for k in self.cur_cols if k in self.entries]
+        f = self.win.focus_get()
+        if f in es: return self.cur_cols[es.index(f)]
+        return self.cur_cols[0] if self.cur_cols else None
+
     def _mv(self, d):
         if self.locked: return
         es = [self.entries[k] for k in self.cur_cols if k in self.entries]
@@ -973,8 +1236,8 @@ class App:
         got = " ".join(es[i].get().split()).lower()
         if got in self._expected_set(col):
             if self._mode() == "listen" and col in self.icons:
-                # reveal the meaning of this word immediately
-                self.icons[col].config(text=self._cur_verb()[0], fg=self.C["GREEN"])
+                # reveal the meaning of this exact form immediately
+                self.icons[col].config(text=self._meaning(col), fg=self.C["GREEN"])
             elif audio.TTS_OK:
                 audio.play_path(self._audio.get(col))
         if i < len(es)-1: es[i+1].focus_set()
@@ -991,21 +1254,25 @@ class App:
                 e.config(highlightbackground=C["GREEN"], highlightcolor=C["GREEN"],
                          disabledforeground=C["GREEN"])
             else:
+                bad.append(self._expected_main(col))
+                if listen:
+                    # show the word you should have heard, right in the field
+                    e.delete(0, "end"); e.insert(0, self._expected_main(col))
                 e.config(highlightbackground=C["RED"], highlightcolor=C["RED"],
                          disabledforeground=C["RED"])
-                bad.append(self._expected_main(col))
             e.config(state="disabled")
             if listen and col in self.icons:
-                # reveal the Spanish meaning of the word that was spoken
-                self.icons[col].config(text=self._cur_verb()[0],
+                # reveal the conjugated Spanish meaning of this form
+                self.icons[col].config(text=self._meaning(col),
                                        fg=C["GREEN"] if ok else C["RED"])
         self.locked = True
         if bad:
-            self.bad_n += 1; self.blk_bad += 1
-            self.pr_fb.config(text="✗   " + "  ·  ".join(bad), fg=C["RED"])
+            self.bad_n += 1; self.blk_bad += 1; self.streak = 0
+            fb = "✗" if listen else "✗   " + "  ·  ".join(bad)
+            self.pr_fb.config(text=fb, fg=C["RED"])
             delay = FEED_BAD
         else:
-            self.ok_n += 1; self.blk_ok += 1
+            self.ok_n += 1; self.blk_ok += 1; self.streak += 1
             self.pr_fb.config(text="✓  Correct!", fg=C["GREEN"])
             delay = FEED_OK
         self.fb_id = self.win.after(delay, self._advance)
@@ -1090,7 +1357,9 @@ class App:
         s = self.screen
         if   s=="menu":     self.mi=max(0,self.mi-1);              self._draw_menu()
         elif s=="setup":    self.si=max(0,self.si-1);              self._draw_setup()
-        elif s=="words":    self._wd_nav(-1)
+        elif s=="words":
+            if self.wd_carry: self._wd_carry_move(-1)
+            else: self._wd_nav(-1)
         elif s=="prac":     self._mv(-1)
         elif s=="blk":      self.bi=max(0,self.bi-1);              self._draw_blk()
         elif s=="fin":      self.fi=max(0,self.fi-1);              self._draw_fin()
@@ -1100,7 +1369,9 @@ class App:
         s = self.screen
         if   s=="menu":     self.mi=min(2,self.mi+1);              self._draw_menu()
         elif s=="setup":    self.si=min(len(self.sr)-1,self.si+1); self._draw_setup()
-        elif s=="words":    self._wd_nav(1)
+        elif s=="words":
+            if self.wd_carry: self._wd_carry_move(1)
+            else: self._wd_nav(1)
         elif s=="prac":     self._mv(1)
         elif s=="blk":      self.bi=min(2,self.bi+1);              self._draw_blk()
         elif s=="fin":      self.fi=min(1,self.fi+1);              self._draw_fin()
@@ -1114,7 +1385,7 @@ class App:
             r = self.sr[self.si]
             if r=="ab": self.sb=max(0,self.sb-1); self._draw_setup()
             elif r=="mode": self._toggle_mode()
-        elif s=="words": self._wd_move(-1)
+        elif s=="words": self._wd_drop()
 
     def _rt(self, _):
         s = self.screen
@@ -1126,13 +1397,15 @@ class App:
                 tot=len(self._layout())
                 self.sb=min(tot-1,self.sb+1); self._draw_setup()
             elif r=="mode": self._toggle_mode()
-        elif s=="words": self._wd_move(1)
+        elif s=="words": self._wd_pick()
 
     def _en(self, _):
         s = self.screen
         if   s=="menu":     self._menu_go()
         elif s=="setup":    self._sel_setup()
-        elif s=="words":    self._wd_toggle()
+        elif s=="words":
+            if self.wd_carry: self._wd_drop()
+            else: self._wd_toggle()
         elif s=="prac":     self._pr_enter()
         elif s=="blk":      self._sel_blk()
         elif s=="fin":      self._sel_fin()
@@ -1140,18 +1413,37 @@ class App:
 
     def _sp(self, _):
         if self.screen=="setup": self._tog(); return "break"
-        if self.screen=="words": self._wd_toggle(); return "break"
+        if self.screen=="words":
+            if not self.wd_carry: self._wd_toggle()
+            return "break"
+        if self.screen=="prac" and self._mode()=="listen":
+            col = self._focused_col()
+            if col: self._play_col(col)
+            return "break"
 
     def _ka(self, _):
         if self.screen=="words":
-            if self.wd_rows: self._wd_toggle_block(self.wd_rows[self.wi]["bi"])
+            if self.wd_rows and not self.wd_carry:
+                self._wd_toggle_block(self.wd_rows[self.wi]["bi"])
+            return "break"
+
+    def _kn(self, _):
+        if self.screen=="words":
+            self._wd_new_dialog()
+            return "break"
+
+    def _kdel(self, _):
+        if self.screen=="words":
+            self._wd_delete()
             return "break"
 
     def _es(self, _):
         s = self.screen
         if   s=="prac":     self._exit_dialog(); return "break"
         elif s=="setup":    self._show("menu"); self._draw_menu()
-        elif s=="words":    self._wd_done()
+        elif s=="words":
+            if self.wd_carry: self._wd_drop()
+            else: self._wd_done()
         elif s=="load":     self._show("setup"); self._draw_setup()
         elif s=="settings": self._show("menu"); self._draw_menu()
         elif s in ("blk","fin"): self._show("menu"); self._draw_menu()
