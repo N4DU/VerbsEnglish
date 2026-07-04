@@ -52,7 +52,8 @@ class App:
         self._anim_i = 0; self.screen = "menu"
         self._last_size = (0,0); self._resize_job = None
         # word-list editor state
-        self.wd_blocks = []; self.wd_carry = None; self.wd_del_pending = None
+        self.wd_blocks = []; self.wd_carry = None
+        self.wd_nav = []; self.wd_recs = {}; self.wd_block_items = []; self.wd_tail = []
 
         # clean cached audio of words that no longer exist in the verb lists
         if audio.TTS_OK:
@@ -67,9 +68,7 @@ class App:
         for key, fn in [("<Up>",self._up),("<Down>",self._dn),("<Left>",self._lt),
                         ("<Right>",self._rt),("<Return>",self._en),
                         ("<space>",self._sp),("<Escape>",self._es),
-                        ("<Key-a>",self._ka),("<Key-n>",self._kn),
-                        ("<Key-b>",self._kb),("<Key-r>",self._kr),
-                        ("<Delete>",self._kdel),("<Shift-Delete>",self._kdelblock)]:
+                        ("<Delete>",self._kdel)]:
             w.bind(key, fn)
         w.bind("<Configure>", self._on_resize)
         self._init_fonts()
@@ -606,61 +605,60 @@ class App:
     def _bld_words(self):
         f = self.fr["words"]; C = self.C
         self.wd_t = self._lbl(f,"",16,C["FG"],bold=True)
-        self.wd_t.place(relx=.5,rely=.025,anchor="n")
+        self.wd_t.place(relx=.5,rely=.03,anchor="n")
         self.wd_sub = self._lbl(f,"",9,C["FG3"])
-        self.wd_sub.place(relx=.5,rely=.085,anchor="n")
-        self.wd_add = self._lbl(f,"[ + New word ]",10,C["ACC_D"],cursor="hand2")
-        self.wd_add.place(relx=.06,rely=.135,anchor="w")
-        self.wd_add.bind("<Button-1>", lambda _: self._wd_new_dialog())
-        self.wd_res = self._lbl(f,"",10,C["ACC_D"],cursor="hand2")
-        self.wd_res.place(relx=.94,rely=.135,anchor="e")
-        self.wd_res.bind("<Button-1>", lambda _: self._wd_restore())
+        self.wd_sub.place(relx=.5,rely=.092,anchor="n")
 
         self.wd_cv = tk.Canvas(f, bg=C["BG"], highlightthickness=0)
         self.wd_scr = tk.Scrollbar(f, orient="vertical", command=self.wd_cv.yview)
         self.wd_cv.config(yscrollcommand=self.wd_scr.set)
-        self.wd_cv.place(relx=.06, rely=.18, relwidth=.86, relheight=.74)
-        self.wd_scr.place(relx=.93, rely=.18, relwidth=.02, relheight=.74)
+        self.wd_cv.place(relx=.06, rely=.15, relwidth=.86, relheight=.77)
+        self.wd_scr.place(relx=.93, rely=.15, relwidth=.02, relheight=.77)
         self.wd_in = tk.Frame(self.wd_cv, bg=C["BG"])
         self.wd_win = self.wd_cv.create_window((0,0), window=self.wd_in, anchor="nw")
         self.wd_in.bind("<Configure>",
             lambda e: self.wd_cv.config(scrollregion=self.wd_cv.bbox("all") or (0,0,0,0)))
         self.wd_cv.bind("<Configure>",
             lambda e: self.wd_cv.itemconfig(self.wd_win, width=e.width))
-        self._hint(f,"Space Toggle   →/↑↓/← Carry   N New word   B New block   "
-                     "Del Delete word   ⇧Del Delete block   A Block on/off   R Restore   Esc Done")
+        self._hint(f,"↑↓ Move   Enter Select   Space Toggle   →  Pick up  ·  ←  Drop   "
+                     "Del Remove word   Esc Done")
 
     def _open_words(self):
         self.wd_t.config(text=f"{CATS[self.cat]['title'].upper()} — WORD LIST")
         self.wd_blocks = [list(b) for b in self._layout()]
         if not self.wd_blocks: self.wd_blocks = [[]]
-        self.wd_carry = None; self.wd_del_pending = None
+        self.wd_carry = None
         self.wi = 0
         self._words_rebuild()
         self._show("words")
 
-    def _words_rebuild(self, keep_name=None):
+    # The word list is a single keyboard-navigable column: block headers, word
+    # rows, and inline action items ("Add a word", "Delete this block",
+    # "New block", "Restore"). ↑↓ moves between all of them, Enter activates the
+    # focused one — no hidden letter shortcuts. → picks a word up to slide it.
+    def _wd_action(self, core, kind, bi=None, indent=False):
+        C = self.C
+        lbl = tk.Label(self.wd_in, text="", font=(self.FF,10), bg=C["BG"],
+                       fg=C["ACC_D"], cursor="hand2", anchor="w")
+        lbl.pack(fill="x", pady=1)
+        it = {"kind":kind, "bi":bi, "frame":lbl, "lbl":lbl, "core":core, "indent":indent}
+        lbl.bind("<Button-1>", lambda _,it=it: self._wd_click(it))
+        return it
+
+    def _words_rebuild(self, keep_name=None, keep_kind=None, keep_bi=None):
         C = self.C
         for ch in self.wd_in.winfo_children(): ch.destroy()
-        self.wd_rows = []; self.wd_recs = {}
-        self.wd_heads = {}; self.wd_head_frames = {}
+        self.wd_recs = {}; self.wd_block_items = []
         vd = self._vdict()
         customs = {v[1] for v in self._custom()}
         has_part = CATS[self.cat]["has_part"]
 
         for bi, blk in enumerate(self.wd_blocks):
-            head = tk.Frame(self.wd_in, bg=C["BG"]); head.pack(fill="x", pady=(10 if bi else 2, 3))
-            hl = tk.Label(head, text="", font=(self.FF,11,"bold"), bg=C["BG"], fg=C["ACC_D"])
-            hl.pack(side="left", padx=(2,8))
-            ha = tk.Label(head, text="[ toggle ]", font=(self.FF,9), bg=C["BG"],
-                          fg=C["FG3"], cursor="hand2")
-            ha.pack(side="left")
-            ha.bind("<Button-1>", lambda _,b=bi: self._wd_toggle_block(b))
-            hd = tk.Label(head, text="[ delete ]", font=(self.FF,9), bg=C["BG"],
-                          fg=C["FG3"], cursor="hand2")
-            hd.pack(side="left", padx=(6,0))
-            hd.bind("<Button-1>", lambda _,b=bi: self._wd_delete_block(b))
-            self.wd_heads[bi] = hl; self.wd_head_frames[bi] = head
+            hdr = tk.Label(self.wd_in, text="", font=(self.FF,11,"bold"),
+                           bg=C["BG"], fg=C["ACC_D"], cursor="hand2", anchor="w")
+            hdr.pack(fill="x", pady=(12 if bi else 2, 3))
+            hitem = {"kind":"toggle", "bi":bi, "frame":hdr, "lbl":hdr}
+            hdr.bind("<Button-1>", lambda _,it=hitem: self._wd_click(it))
 
             for name in blk:
                 v = vd.get(name)
@@ -670,104 +668,142 @@ class App:
                 row.pack(fill="x", pady=1)
                 forms = " · ".join(v[1:4] if has_part else v[1:3])
                 l = tk.Label(row, text="", font=(self.FF,11), bg=C["BG"], anchor="w")
-                l.pack(side="left", padx=(14,0))
+                l.pack(side="left", padx=(20,0))
                 r = tk.Label(row, text=v[0]+("  •" if name in customs else ""),
                              font=(self.FF,10), bg=C["BG"], fg=C["FG3"], anchor="e")
                 r.pack(side="right", padx=(0,14))
-                rec = {"name":name,"bi":bi,"frame":row,"l":l,"r":r,"forms":forms}
+                rec = {"kind":"word","name":name,"bi":bi,"frame":row,
+                       "l":l,"r":r,"forms":forms}
                 for w in (row,l,r):
-                    w.bind("<Button-1>", lambda _,n=name: self._wd_click_name(n))
-                self.wd_rows.append(rec); self.wd_recs[name] = rec
+                    w.bind("<Button-1>", lambda _,it=rec: self._wd_click(it))
+                self.wd_recs[name] = rec
 
-        foot = tk.Label(self.wd_in, text="[ + Add block ]", font=(self.FF,10),
-                        bg=C["BG"], fg=C["FG3"], cursor="hand2")
-        foot.pack(pady=(14,8))
-        foot.bind("<Button-1>", lambda _: self._wd_add_block())
+            add  = self._wd_action("＋  Add a word here",  "add",      bi, indent=True)
+            dele = self._wd_action("🗑  Delete this block", "delblock", bi, indent=True)
+            self.wd_block_items.append({"header":hitem, "add":add, "delete":dele})
 
+        self.wd_tail = [self._wd_action("＋  New block", "newblock")]
+        if self._deleted():
+            self.wd_tail.append(self._wd_action("", "restore"))
+
+        self._rebuild_nav()
+        idx = None
         if keep_name and keep_name in self.wd_recs:
-            self.wi = self.wd_rows.index(self.wd_recs[keep_name])
-        self.wi = max(0, min(self.wi, len(self.wd_rows)-1))
+            idx = self.wd_nav.index(self.wd_recs[keep_name])
+        elif keep_kind is not None:
+            for j,it in enumerate(self.wd_nav):
+                if it["kind"]==keep_kind and it.get("bi")==keep_bi: idx=j; break
+        self.wi = idx if idx is not None else max(0, min(self.wi, len(self.wd_nav)-1))
         self._wd_refresh_all()
         self._collect_fonts(self.wd_in); self._scale_fonts()
         self.wd_cv.yview_moveto(0)
-        if keep_name: self.win.after(50, lambda: self._wd_scroll_to(self.wi))
+        if keep_name or keep_kind is not None:
+            self.win.after(50, lambda: self._wd_scroll_to(self.wi))
+
+    def _rebuild_nav(self):
+        """The flat ordered list of everything ↑↓ can land on."""
+        nav = []
+        for bi in range(len(self.wd_blocks)):
+            items = self.wd_block_items[bi]
+            nav.append(items["header"])
+            for name in self.wd_blocks[bi]:
+                if name in self.wd_recs: nav.append(self.wd_recs[name])
+            nav.append(items["add"]); nav.append(items["delete"])
+        nav += self.wd_tail
+        self.wd_nav = nav
 
     def _wd_refresh_all(self):
         C = self.C; ds = self._disabled()
-        for i in range(len(self.wd_rows)): self._wd_refresh_row(i)
-        en_total = 0
-        for bi, blk in enumerate(self.wd_blocks):
-            en = sum(1 for n in blk if n not in ds); en_total += en
-            if bi in self.wd_heads:
-                self.wd_heads[bi].config(text=f"Block {bi+1}  —  {en}/{len(blk)} selected")
+        for i in range(len(self.wd_nav)): self._wd_refresh_item(i)
+        en_total = sum(1 for blk in self.wd_blocks for n in blk if n not in ds)
         if self.wd_carry:
             self.wd_sub.config(fg=C["ACC_D"],
-                text=f"Carrying '{self.wd_carry}' — move it with ↑↓, drop it with ←")
+                text=f"Moving “{self.wd_carry}” —  ↑↓ to slide it,  ← to drop it here")
         else:
             self.wd_sub.config(fg=C["FG3"],
-                text=f"{en_total} words selected  ·  {len(self.wd_blocks)} blocks  ·  "
-                     "changes are saved automatically")
-        dele = self._deleted()
-        self.wd_res.config(text=f"[ Restore {len(dele)} deleted ]" if dele else "")
+                text=f"{en_total} words on  ·  {len(self.wd_blocks)} blocks  ·  "
+                     "everything saves automatically")
 
-    def _wd_refresh_row(self, i):
-        C = self.C; rec = self.wd_rows[i]
+    def _wd_refresh_item(self, i):
+        C = self.C; it = self.wd_nav[i]; sel = (i == self.wi); k = it["kind"]
+        if k == "word":
+            on = it["name"] not in self._disabled()
+            carried = (it["name"] == self.wd_carry)
+            bg = C["SEL"] if (sel or carried) else C["BG"]
+            mark = "☑" if on else "☐"
+            ptr = "≡ " if carried else ("▶ " if sel else "   ")
+            it["frame"].config(bg=bg, highlightthickness=1 if carried else 0)
+            it["l"].config(text=f"{ptr}{mark}  {it['forms']}", bg=bg,
+                           fg=(C["FG"] if sel else C["FG2"]) if on else C["FG3"])
+            it["r"].config(bg=bg, fg=C["FG2"] if sel else C["FG3"])
+        elif k == "toggle":
+            bi = it["bi"]; blk = self.wd_blocks[bi]
+            en = sum(1 for n in blk if n not in self._disabled())
+            core = f"Block {bi+1}   ·   {en}/{len(blk)} on"
+            it["lbl"].config(text=("▶ " if sel else "   ")+core,
+                             bg=C["SEL"] if sel else C["BG"],
+                             fg=C["FG"] if sel else C["ACC_D"])
+        else:
+            core = it["core"]
+            if k == "restore":
+                n = len(self._deleted())
+                core = f"↩  Restore {n} deleted word{'s' if n!=1 else ''}"
+            pad = "      " if it.get("indent") else ""
+            it["lbl"].config(text=pad+("▶ " if sel else "   ")+core,
+                             bg=C["SEL"] if sel else C["BG"],
+                             fg=C["FG"] if sel else C["ACC_D"])
+
+    # — selection / activation —
+    def _wd_click(self, it):
+        if self.wd_carry:
+            if it["kind"] == "word" and it["name"] == self.wd_carry: self._wd_drop()
+            return
+        try: idx = self.wd_nav.index(it)
+        except ValueError: return
+        self.wi = idx
+        self._wd_refresh_all()
+        self._wd_activate()
+
+    def _wd_activate(self):
+        if self.wd_carry: self._wd_drop(); return
+        if not self.wd_nav: return
+        it = self.wd_nav[self.wi]; k = it["kind"]
+        if   k == "word":     self._wd_toggle_word(it["name"])
+        elif k == "toggle":   self._wd_toggle_block(it["bi"])
+        elif k == "add":      self._wd_new_dialog(it["bi"])
+        elif k == "delblock": self._wd_delete_block(it["bi"])
+        elif k == "newblock": self._wd_add_block()
+        elif k == "restore":  self._wd_restore()
+
+    def _wd_toggle_word(self, name):
         ds = self._disabled()
-        on  = rec["name"] not in ds
-        sel = (i == self.wi)
-        carried = (rec["name"] == self.wd_carry)
-        bg  = C["SEL"] if (sel or carried) else C["BG"]
-        mark = "☑" if on else "☐"
-        rec["frame"].config(bg=bg, highlightthickness=1 if carried else 0)
-        rec["l"].pack_configure(padx=((34 if carried else 14), 0))
-        rec["l"].config(text=f"{mark}  {rec['forms']}", bg=bg,
-                        fg=(C["FG"] if sel else C["FG2"]) if on else C["FG3"])
-        rec["r"].config(bg=bg, fg=C["FG2"] if sel else C["FG3"])
-
-    def _wd_click_name(self, name):
-        if self.wd_carry: return
-        rec = self.wd_recs.get(name)
-        if not rec: return
-        old = self.wi; self.wi = self.wd_rows.index(rec)
-        self._wd_refresh_row(old); self._wd_refresh_row(self.wi)
-        self._wd_toggle()
-
-    def _wd_toggle(self):
-        if not self.wd_rows or self.wd_carry: return
-        self.wd_del_pending = None
-        rec = self.wd_rows[self.wi]; ds = self._disabled()
-        if rec["name"] in ds: ds.discard(rec["name"])
-        else: ds.add(rec["name"])
+        if name in ds: ds.discard(name)
+        else: ds.add(name)
         self._set_disabled(ds)
         self._wd_refresh_all()
 
     def _wd_toggle_block(self, bi):
-        if self.wd_carry: return
         blk = self.wd_blocks[bi]; ds = self._disabled()
         if any(n in ds for n in blk): ds.difference_update(blk)
         else: ds.update(blk)
         self._set_disabled(ds)
         self._wd_refresh_all()
 
-    # — carry a word (game-style move) —
+    # — slide a word between positions/blocks (the carry system) —
     def _wd_pick(self):
-        if not self.wd_rows or self.wd_carry: return
-        self.wd_carry = self.wd_rows[self.wi]["name"]
-        self.wd_del_pending = None
+        if self.wd_carry or not self.wd_nav: return
+        it = self.wd_nav[self.wi]
+        if it["kind"] != "word": return
+        self.wd_carry = it["name"]
         self._wd_refresh_all()
 
     def _wd_drop(self):
         if not self.wd_carry: return
-        name = self.wd_carry
-        self.wd_carry = None
-        # drop can leave the source block empty — rebuild so its header goes away
+        name = self.wd_carry; self.wd_carry = None
         if any(not b for b in self.wd_blocks):
             self.wd_blocks = [b for b in self.wd_blocks if b] or [[]]
-            self._wd_save_layout()
-            self._words_rebuild(keep_name=name)
-        else:
-            self._wd_save_layout()
-            self._wd_refresh_all()
+        self._wd_save_layout()
+        self._words_rebuild(keep_name=name)
 
     def _wd_pos(self, name):
         for bi, blk in enumerate(self.wd_blocks):
@@ -794,18 +830,17 @@ class App:
         self._wd_repack(name)
 
     def _wd_repack(self, name):
-        """Re-pack the carried row at its new position (no full rebuild)."""
+        """Re-pack the sliding row at its new spot (smooth, no full rebuild)."""
         rec = self.wd_recs[name]
-        bi, pos = self._wd_pos(name)
-        rec["bi"] = bi
+        bi, pos = self._wd_pos(name); rec["bi"] = bi
         if pos > 0:
             prev = self.wd_recs[self.wd_blocks[bi][pos-1]]["frame"]
             rec["frame"].pack(fill="x", pady=1, after=prev)
         else:
-            rec["frame"].pack(fill="x", pady=1, after=self.wd_head_frames[bi])
-        self.wd_rows = [self.wd_recs[n] for blk in self.wd_blocks
-                        for n in blk if n in self.wd_recs]
-        self.wi = self.wd_rows.index(rec)
+            rec["frame"].pack(fill="x", pady=1,
+                              after=self.wd_block_items[bi]["header"]["frame"])
+        self._rebuild_nav()
+        self.wi = self.wd_nav.index(rec)
         self._wd_refresh_all()
         self._wd_scroll_to(self.wi)
 
@@ -813,14 +848,14 @@ class App:
     def _wd_add_block(self):
         if self.wd_carry: return
         self.wd_blocks.append([])
-        keep = self.wd_rows[self.wi]["name"] if self.wd_rows else None
-        self._words_rebuild(keep_name=keep)
+        # focus the new block's header so you can add words to it right away
+        self._words_rebuild(keep_kind="toggle", keep_bi=len(self.wd_blocks)-1)
 
     def _wd_delete_block(self, bi):
         if self.wd_carry or not (0 <= bi < len(self.wd_blocks)): return
-        self.wd_del_pending = None
         if len(self.wd_blocks) <= 1:
-            self.wd_sub.config(text="Can't delete the only block.", fg=self.C["RED"])
+            self.wd_sub.config(text="This is the only block — it can't be deleted.",
+                               fg=self.C["RED"])
             return
         if not self.wd_blocks[bi]:            # empty block: just remove it
             self.wd_blocks.pop(bi)
@@ -849,6 +884,51 @@ class App:
             else:      self.wd_blocks[0][0:0] = blk
         if not self.wd_blocks: self.wd_blocks = [[]]
         self._wd_save_layout(); self._words_rebuild()
+
+    def _confirm(self, title, msg, ok_text, on_ok):
+        """A small yes/no modal, keyboard-navigable (←→/Enter/Esc)."""
+        C = self.C
+        dlg = tk.Toplevel(self.win); dlg.title(title); dlg.transient(self.win)
+        try: dlg.grab_set()
+        except tk.TclError: pass
+        dlg.resizable(False, False); dlg.config(bg=C["BG"], padx=26, pady=22)
+        tk.Label(dlg, text=title, font=(self.FF,14,"bold"), bg=C["BG"], fg=C["FG"])\
+            .pack(pady=(0,6))
+        tk.Label(dlg, text=msg, font=(self.FF,10), bg=C["BG"], fg=C["FG2"],
+                 wraplength=300, justify="center").pack(pady=(0,16))
+        opts = [("ok", ok_text), ("cancel", "Cancel")]
+        sel = [1]; labels = []
+        bf = tk.Frame(dlg, bg=C["BG"]); bf.pack()
+        def render():
+            for i,(k,txt) in enumerate(opts):
+                on = i == sel[0]
+                labels[i].config(
+                    bg=(C["RED"] if k=="ok" else C["SEL"]) if on else C["CARD"],
+                    fg="#FFFFFF" if (on and k=="ok") else (C["FG"] if on else C["FG2"]),
+                    highlightbackground=C["ACC"] if on else C["BORDER"])
+        def choose(k):
+            dlg.destroy()
+            if k == "ok": on_ok()
+        for i,(k,txt) in enumerate(opts):
+            l = tk.Label(bf, text=txt, font=(self.FF,11), bg=C["CARD"], fg=C["FG2"],
+                         padx=18, pady=8, cursor="hand2",
+                         highlightthickness=1, highlightbackground=C["BORDER"])
+            l.grid(row=0, column=i, padx=6); labels.append(l)
+            l.bind("<Button-1>", lambda _,k=k: choose(k))
+            l.bind("<Enter>", lambda _,i=i: (sel.__setitem__(0,i), render()))
+        tk.Label(dlg, text="←→ Move    Enter Select    Esc Cancel",
+                 font=(self.FF,9), bg=C["BG"], fg=C["FG3"]).pack(pady=(14,0))
+        def mv(d): sel[0] = max(0, min(sel[0]+d, len(opts)-1)); render()
+        dlg.bind("<Left>",  lambda _: mv(-1))
+        dlg.bind("<Right>", lambda _: mv(1))
+        dlg.bind("<Return>", lambda _: choose(opts[sel[0]][0]))
+        dlg.bind("<Escape>", lambda _: choose("cancel"))
+        render()
+        dlg.update_idletasks()
+        x = self.win.winfo_rootx()+(self.win.winfo_width() -dlg.winfo_width()) //2
+        y = self.win.winfo_rooty()+(self.win.winfo_height()-dlg.winfo_height())//2
+        dlg.geometry(f"+{max(x,0)}+{max(y,0)}")
+        dlg.focus_set(); dlg.wait_window()
 
     def _wd_block_dialog(self, bi):
         C = self.C; n = len(self.wd_blocks[bi])
@@ -926,7 +1006,7 @@ class App:
                     except Exception: pass
             threading.Thread(target=run, daemon=True).start()
 
-    def _wd_new_dialog(self):
+    def _wd_new_dialog(self, target_bi=None):
         if self.screen != "words" or self.wd_carry: return
         C = self.C; has_part = CATS[self.cat]["has_part"]
         dlg = tk.Toplevel(self.win)
@@ -964,7 +1044,12 @@ class App:
             entries[key] = e
         order = [k for _,k,_ in specs]
 
-        cur_bi = self.wd_rows[self.wi]["bi"] if self.wd_rows else 0
+        if target_bi is not None:
+            cur_bi = target_bi
+        else:
+            foc = self.wd_nav[self.wi] if self.wd_nav else None
+            cur_bi = foc.get("bi", 0) if foc else 0
+        cur_bi = max(0, min(cur_bi or 0, len(self.wd_blocks)-1))
         blk = [cur_bi]
         rowN = 2+len(specs)
         tk.Label(dlg, text="Block", font=(self.FF,10), bg=C["BG"], fg=C["FG2"],
@@ -1018,20 +1103,30 @@ class App:
         entries["es"].focus_set(); dlg.wait_window()
 
     def _wd_delete(self):
-        if self.screen != "words" or not self.wd_rows or self.wd_carry: return
-        rec = self.wd_rows[self.wi]; name = rec["name"]
-        if self.wd_del_pending != name:
-            self.wd_del_pending = name
-            self.wd_sub.config(text=f"Delete '{name}'?  Press Delete again to confirm",
-                               fg=self.C["RED"])
-            return
-        self.wd_del_pending = None
-        nxt = (self.wd_rows[self.wi+1]["name"] if self.wi+1 < len(self.wd_rows)
-               else self.wd_rows[self.wi-1]["name"] if self.wi > 0 else None)
+        """Del key: remove the focused word (with a confirmation dialog)."""
+        if self.screen != "words" or self.wd_carry or not self.wd_nav: return
+        it = self.wd_nav[self.wi]
+        if it["kind"] == "word": self._wd_delete_word(it["name"])
+
+    def _wd_delete_word(self, name):
+        v = self._vdict().get(name)
+        if not v: return
+        is_custom = any(vv[1] == name for vv in self._custom())
+        note = ("This is one of your own words — it can't be restored."
+                if is_custom else "You can bring it back later with “Restore”.")
+        self._confirm(f"Remove “{v[1]}”?", f"{v[0]}\n\n{note}", "Remove",
+                      lambda: self._wd_remove_word(name))
+
+    def _wd_remove_word(self, name):
+        nxt = None
+        if name in self.wd_recs:
+            j = self.wd_nav.index(self.wd_recs[name])
+            for it in self.wd_nav[j+1:] + self.wd_nav[j-1::-1]:
+                if it["kind"] == "word" and it["name"] != name:
+                    nxt = it["name"]; break
         for blk in self.wd_blocks:
             if name in blk: blk.remove(name); break
-        p = self._cat_prog()
-        customs = self._custom()
+        p = self._cat_prog(); customs = self._custom()
         if any(v[1] == name for v in customs):
             p["custom"] = [v for v in customs if v[1] != name]
             es = p.get("custom_es")
@@ -1039,6 +1134,8 @@ class App:
         else:
             dele = self._deleted(); dele.add(name); p["deleted"] = sorted(dele)
         ds = self._disabled(); ds.discard(name); p["disabled"] = sorted(ds)
+        if any(not b for b in self.wd_blocks):
+            self.wd_blocks = [b for b in self.wd_blocks if b] or [[]]
         self._wd_save_layout()
         self._words_rebuild(keep_name=nxt)
 
@@ -1054,17 +1151,16 @@ class App:
 
     # — navigation / persistence —
     def _wd_nav(self, d):
-        if not self.wd_rows: return
-        self.wd_del_pending = None
+        if not self.wd_nav: return
         old = self.wi
-        self.wi = max(0, min(self.wi+d, len(self.wd_rows)-1))
+        self.wi = max(0, min(self.wi+d, len(self.wd_nav)-1))
         if old != self.wi:
-            self._wd_refresh_row(old); self._wd_refresh_row(self.wi)
+            self._wd_refresh_item(old); self._wd_refresh_item(self.wi)
             self._wd_scroll_to(self.wi)
 
     def _wd_scroll_to(self, i):
         try:
-            fr = self.wd_rows[i]["frame"]
+            fr = self.wd_nav[i]["frame"]
             self.wd_cv.update_idletasks()
             y, rh = fr.winfo_y(), fr.winfo_height()
             total = max(1, self.wd_in.winfo_height())
@@ -1600,9 +1696,7 @@ class App:
         s = self.screen
         if   s=="menu":     self._menu_go()
         elif s=="setup":    self._sel_setup()
-        elif s=="words":
-            if self.wd_carry: self._wd_drop()
-            else: self._wd_toggle()
+        elif s=="words":    self._wd_activate()
         elif s=="prac":     self._pr_enter()
         elif s=="blk":      self._sel_blk()
         elif s=="fin":      self._sel_fin()
@@ -1611,42 +1705,16 @@ class App:
     def _sp(self, _):
         if self.screen=="setup": self._tog(); return "break"
         if self.screen=="words":
-            if not self.wd_carry: self._wd_toggle()
+            if not self.wd_carry: self._wd_activate()
             return "break"
         if self.screen=="prac" and self._mode()=="listen":
             col = self._focused_col()
             if col: self._play_col(col)
             return "break"
 
-    def _ka(self, _):
-        if self.screen=="words":
-            if self.wd_rows and not self.wd_carry:
-                self._wd_toggle_block(self.wd_rows[self.wi]["bi"])
-            return "break"
-
-    def _kn(self, _):
-        if self.screen=="words":
-            self._wd_new_dialog()
-            return "break"
-
-    def _kb(self, _):
-        if self.screen=="words" and not self.wd_carry:
-            self._wd_add_block()
-            return "break"
-
-    def _kr(self, _):
-        if self.screen=="words" and not self.wd_carry:
-            self._wd_restore()
-            return "break"
-
     def _kdel(self, _):
         if self.screen=="words":
             self._wd_delete()
-            return "break"
-
-    def _kdelblock(self, _):
-        if self.screen=="words" and self.wd_rows and not self.wd_carry:
-            self._wd_delete_block(self.wd_rows[self.wi]["bi"])
             return "break"
 
     def _es(self, _):
