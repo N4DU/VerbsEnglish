@@ -142,10 +142,13 @@ class App:
         legacy = d.pop("settings", None)
         if isinstance(legacy, dict) and legacy.get("voice") and "voice" not in d:
             d["voice"] = legacy["voice"]
+        def _int(x):
+            try: return max(0, int(x))
+            except (TypeError, ValueError): return 0
         for cat in CATS:
             p = d.get(cat)
             if not isinstance(p, dict): p = {"completed":0}
-            p["completed"] = int(p.get("completed",0) or 0)
+            p["completed"] = _int(p.get("completed", 0))
             d[cat] = p
         d.setdefault("voice", "en-US-AriaNeural")
         d.setdefault("theme", "light")
@@ -154,7 +157,13 @@ class App:
         return d
 
     def _save_prog(self):
-        try: PROG_F.write_text(json.dumps(self.prog, indent=2, ensure_ascii=False), "utf-8")
+        # Atomic write: a crash mid-save can't corrupt progress.json
+        # (which holds custom words, block layout and progress).
+        try:
+            data = json.dumps(self.prog, indent=2, ensure_ascii=False)
+            tmp = PROG_F.with_suffix(".json.tmp")
+            tmp.write_text(data, "utf-8")
+            tmp.replace(PROG_F)
         except Exception: pass
 
     def _cat_prog(self, cat=None):
@@ -180,7 +189,9 @@ class App:
         except Exception: pass
         return None
 
-    def _get_voice(self): return self.prog.get("voice", "en-US-AriaNeural")
+    def _get_voice(self):
+        v = self.prog.get("voice", "en-US-AriaNeural")
+        return v if any(v == k for k,_ in VOICES) else VOICES[0][0]
     def _set_voice(self, v): self.prog["voice"] = v; self._save_prog()
 
     def _mode(self):
