@@ -714,9 +714,16 @@ class App:
 
     def _wd_drop(self):
         if not self.wd_carry: return
+        name = self.wd_carry
         self.wd_carry = None
-        self._wd_save_layout()
-        self._wd_refresh_all()
+        # drop can leave the source block empty — rebuild so its header goes away
+        if any(not b for b in self.wd_blocks):
+            self.wd_blocks = [b for b in self.wd_blocks if b] or [[]]
+            self._wd_save_layout()
+            self._words_rebuild(keep_name=name)
+        else:
+            self._wd_save_layout()
+            self._wd_refresh_all()
 
     def _wd_pos(self, name):
         for bi, blk in enumerate(self.wd_blocks):
