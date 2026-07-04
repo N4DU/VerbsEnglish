@@ -391,7 +391,12 @@ class App:
                 .place(relx=.5,rely=.78,anchor="center")
         for i,l in enumerate(self.st_rows):
             l.bind("<Button-1>", lambda _,i=i: self._click_settings(i))
+            l.bind("<Enter>", lambda _,i=i: self._hover_settings(i))
         self._hint(f,"↑↓ Navigate      Enter Apply      Esc Back")
+
+    def _hover_settings(self, i):
+        if self.screen=="settings" and self.sti != i:
+            self.sti=i; self._draw_settings()
 
     def _open_settings(self):
         cur = self._get_voice()
@@ -460,6 +465,11 @@ class App:
                       "words":self.su_w,"ac":self.su_c,"ab":self.su_b,"an":self.su_n}
         for k,ww in self.su_wm.items():
             ww.bind("<Button-1>", lambda _,k=k: self._click_setup(k))
+            ww.bind("<Enter>", lambda _,k=k: self._hover_setup(k))
+
+    def _hover_setup(self, k):
+        if self.screen=="setup" and k in self.sr and self.si != self.sr.index(k):
+            self.si = self.sr.index(k); self._draw_setup()
 
     def _open_setup(self):
         info = CATS[self.cat]
@@ -1334,7 +1344,11 @@ class App:
             l = self._lbl(f,"",14,cursor="hand2",anchor="w")
             l.place(relx=.34,rely=y,anchor="w"); self.blk_rows.append(l)
             l.bind("<Button-1>", lambda _,i=i: self._click_blk(i))
+            l.bind("<Enter>", lambda _,i=i: self._hover_blk(i))
         self._hint(f,"↑↓ Navigate      Enter Select      Esc Menu")
+
+    def _hover_blk(self, i):
+        if self.screen=="blk" and self.bi != i: self.bi=i; self._draw_blk()
 
     def _draw_blk(self):
         C = self.C
@@ -1363,7 +1377,11 @@ class App:
             l = self._lbl(f,"",14,cursor="hand2",anchor="w")
             l.place(relx=.34,rely=y,anchor="w"); self.fin_rows.append(l)
             l.bind("<Button-1>", lambda _,i=i: self._click_fin(i))
+            l.bind("<Enter>", lambda _,i=i: self._hover_fin(i))
         self._hint(f,"↑↓ Navigate      Enter Select      Esc Menu")
+
+    def _hover_fin(self, i):
+        if self.screen=="fin" and self.fi != i: self.fi=i; self._draw_fin()
 
     def _show_fin(self):
         self.fi = 0; self._show("fin"); self._draw_fin()
