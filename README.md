@@ -17,7 +17,7 @@ El modo se elige con una sola opción ("Mode") en la pantalla de configuración.
 
 ```
 pip install -r requirements.txt
-python VerbsEnglish.py
+python main.py
 ```
 
 `tkinter` viene incluido con Python (en Linux: `sudo apt install python3-tk`).
@@ -50,8 +50,11 @@ con ← →. Todo se guarda solo en `progress.json`.
 
 | Archivo | Contenido |
 |---|---|
-| `VerbsEnglish.py` | Punto de entrada |
+| `main.py` | Punto de entrada — el que se ejecuta |
 | `verbs_app.py` | Interfaz y lógica de sesión |
 | `verbs_data.py` | Listas de verbos, temas y constantes |
-| `verbs_audio.py` | Voz (edge-tts + pygame) |
+| `verbs_audio.py` | Voz: generación, caché en disco y reproducción segura |
 | `verbs_phrases.py` | Caché de frases con Gemini AI |
+
+Los audios se guardan en `audio_cache/` (se crea sola); si cambias palabras,
+los audios de palabras eliminadas se limpian automáticamente al arrancar.
