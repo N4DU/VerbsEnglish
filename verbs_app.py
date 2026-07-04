@@ -12,7 +12,7 @@ drop it (←) anywhere — including into another block.
 """
 import tkinter as tk
 import tkinter.font as tkfont
-import random, json, threading
+import os, random, json, threading
 
 import verbs_audio as audio
 from verbs_phrases import Cache, GEMINI_OK
@@ -169,10 +169,14 @@ class App:
         self._save_prog()
 
     def _load_key(self):
+        # Environment variable wins, so users never have to edit a file.
+        env = os.environ.get("GEMINI_API_KEY", "").strip()
+        if env: return env
         try:
             d = json.loads(CONF_F.read_text("utf-8"))
             k = str(d.get("gemini_api_key","")).strip()
-            if k and k != "PONER_LA_KEY_AQUI": return k
+            placeholders = {"PONER_LA_KEY_AQUI", "TU_KEY_AQUI", "YOUR_API_KEY_HERE"}
+            if k and k not in placeholders: return k
         except Exception: pass
         return None
 
@@ -501,6 +505,11 @@ class App:
         if listen:
             m = "☑" if self.prog.get("listen_hint", True) else "☐"
             self.su_h.config(text=f"{m}  Show Spanish word as a hint", fg=C["FG2"])
+        elif not self.key:
+            self.su_h.config(
+                text="No API key — you'll practice with blank fields."
+                     + ("  Try Listening (no key needed)." if audio.TTS_OK else ""),
+                fg=C["FG3"])
         else:
             self.su_h.config(text="")
 
