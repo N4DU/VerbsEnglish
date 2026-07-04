@@ -123,12 +123,17 @@ class App:
         return self._cur_verb()[idx_map[col]]
 
     def _meaning(self, col, verb=None):
-        """Spanish meaning of the given form: eat->comer, ate->comí, eaten->comido."""
+        """Spanish meaning of the given form: eat->comer, ate->comí, eaten->comido.
+
+        Built-in verbs use the SPANISH_FORMS table; custom words use the
+        conjugations the user optionally typed. When a conjugation is missing
+        it falls back to the base meaning (the Spanish infinitive)."""
         verb = verb or self._cur_verb()
         if col == "base": return verb[0]
-        forms = SPANISH_FORMS.get(verb[1])
+        forms = SPANISH_FORMS.get(verb[1]) or self._custom_es().get(verb[1])
         if not forms: return verb[0]
-        return forms[0] if col == "past" else forms[1]
+        val = forms[0] if col == "past" else forms[1]
+        return val or verb[0]
 
     # ── Progress / config ─────────────────────────────────────────────────────
     def _load_prog(self):
@@ -208,6 +213,18 @@ class App:
              and all(isinstance(s, str) and s.strip() for s in v[:3])]
         p["custom"] = c
         return c
+
+    def _custom_es(self, cat=None):
+        """Optional Spanish conjugations for custom words: {base: [past, part]}."""
+        p = self._cat_prog(cat)
+        m = p.get("custom_es")
+        if not isinstance(m, dict): m = {}
+        customs = {v[1] for v in self._custom(cat)}
+        m = {k: [str(v[0]), str(v[1] if len(v) > 1 else "")]
+             for k, v in m.items()
+             if k in customs and isinstance(v, list) and v}
+        p["custom_es"] = m
+        return m
 
     def _deleted(self, cat=None):
         """Names of built-in verbs the user removed."""
@@ -793,10 +810,17 @@ class App:
         keep = self.wd_rows[self.wi]["name"] if self.wd_rows else None
         self._words_rebuild(keep_name=keep)
 
-    def _wd_create_word(self, row, bi):
-        """row = [es, base, past] (+[part] for irregular); insert into block bi."""
+    def _wd_create_word(self, row, bi, es_past="", es_part=""):
+        """row = [es, base, past] (+[part] for irregular); insert into block bi.
+        es_past / es_part are the optional Spanish conjugations shown in
+        Listening mode (e.g. comí / comido)."""
         p = self._cat_prog()
         c = self._custom(); c.append([s.strip() for s in row]); p["custom"] = c
+        base = row[1].strip()
+        if es_past.strip() or es_part.strip():
+            m = p.get("custom_es")
+            if not isinstance(m, dict): m = {}
+            m[base] = [es_past.strip(), es_part.strip()]; p["custom_es"] = m
         if not self.wd_blocks: self.wd_blocks = [[]]
         bi = max(0, min(bi, len(self.wd_blocks)-1))
         self.wd_blocks[bi].append(row[1].strip())
@@ -823,22 +847,37 @@ class App:
         dlg.resizable(False, False); dlg.config(bg=C["BG"], padx=24, pady=18)
 
         tk.Label(dlg, text="Create your own word", font=(self.FF,13,"bold"),
-                 bg=C["BG"], fg=C["FG"]).grid(row=0, column=0, columnspan=3, pady=(0,12))
-        fields = [("Spanish (significado)", ""), ("English (base form)", ""),
-                  ("Past simple", "")] + ([("Past participle","")] if has_part else [])
-        entries = []
-        for i,(lbl,_) in enumerate(fields):
-            tk.Label(dlg, text=lbl, font=(self.FF,10), bg=C["BG"], fg=C["FG2"],
-                     anchor="w").grid(row=1+i, column=0, sticky="w", pady=3)
-            e = tk.Entry(dlg, font=(self.FF,11), width=20, bg=C["ENTRY"], fg=C["FG"],
+                 bg=C["BG"], fg=C["FG"]).grid(row=0, column=0, columnspan=3, pady=(0,2))
+        tk.Label(dlg, text="Spanish conjugations are optional — they show as the "
+                           "answer's meaning in Listening mode.",
+                 font=(self.FF,8), bg=C["BG"], fg=C["FG3"], wraplength=320, justify="left")\
+            .grid(row=1, column=0, columnspan=3, pady=(0,10), sticky="w")
+
+        # (label, key, optional)
+        specs = [("Spanish — meaning (e.g. comer)", "es",   False),
+                 ("English — base form",            "base", False),
+                 ("English — past simple",          "past", False)]
+        if has_part:
+            specs.append(("English — past participle", "part", False))
+        specs.append(("Spanish — past (optional, e.g. comí)", "es_past", True))
+        if has_part:
+            specs.append(("Spanish — participle (optional, e.g. comido)", "es_part", True))
+
+        entries = {}
+        for i,(lbl,key,opt) in enumerate(specs):
+            tk.Label(dlg, text=lbl, font=(self.FF,10), bg=C["BG"],
+                     fg=C["FG3"] if opt else C["FG2"],
+                     anchor="w").grid(row=2+i, column=0, sticky="w", pady=3)
+            e = tk.Entry(dlg, font=(self.FF,11), width=22, bg=C["ENTRY"], fg=C["FG"],
                          insertbackground=C["FG"], bd=0, highlightthickness=1,
                          highlightbackground=C["BORDER"], highlightcolor=C["ACC"])
-            e.grid(row=1+i, column=1, columnspan=2, sticky="we", padx=(12,0), pady=3)
-            entries.append(e)
+            e.grid(row=2+i, column=1, columnspan=2, sticky="we", padx=(12,0), pady=3)
+            entries[key] = e
+        order = [k for _,k,_ in specs]
 
         cur_bi = self.wd_rows[self.wi]["bi"] if self.wd_rows else 0
         blk = [cur_bi]
-        rowN = 1+len(fields)
+        rowN = 2+len(specs)
         tk.Label(dlg, text="Block", font=(self.FF,10), bg=C["BG"], fg=C["FG2"],
                  anchor="w").grid(row=rowN, column=0, sticky="w", pady=(8,3))
         bl = tk.Label(dlg, text="", font=(self.FF,11), bg=C["BG"], fg=C["FG"])
@@ -854,15 +893,20 @@ class App:
         msg.grid(row=rowN+1, column=0, columnspan=3, pady=(6,0))
 
         def save(_=None):
-            vals = [e.get().strip() for e in entries]
-            eng  = [v.lower() for v in vals[1:]]
-            if not vals[0] or any(not v for v in eng):
-                msg.config(text="Fill in every field."); return
-            if any("|" in v for v in vals):
+            d = {k: entries[k].get().strip() for k in entries}
+            required = ["es","base","past"] + (["part"] if has_part else [])
+            if any(not d[k] for k in required):
+                msg.config(text="Fill in the required fields."); return
+            if any("|" in v for v in d.values()):
                 msg.config(text="The character | is not allowed."); return
-            if eng[0] in self._vdict():
-                msg.config(text=f"'{eng[0]}' already exists."); return
-            self._wd_create_word([vals[0]] + eng, blk[0])
+            base = d["base"].lower()
+            if base in self._vdict():
+                msg.config(text=f"'{base}' already exists."); return
+            row = [d["es"], base, d["past"].lower()]
+            if has_part: row.append(d["part"].lower())
+            self._wd_create_word(row, blk[0],
+                                 es_past=d.get("es_past",""),
+                                 es_part=d.get("es_part","") if has_part else "")
             dlg.destroy()
         def cancel(_=None): dlg.destroy()
 
@@ -882,7 +926,7 @@ class App:
         x = self.win.winfo_rootx()+(self.win.winfo_width() -dlg.winfo_width()) //2
         y = self.win.winfo_rooty()+(self.win.winfo_height()-dlg.winfo_height())//2
         dlg.geometry(f"+{max(x,0)}+{max(y,0)}")
-        entries[0].focus_set(); dlg.wait_window()
+        entries["es"].focus_set(); dlg.wait_window()
 
     def _wd_delete(self):
         if self.screen != "words" or not self.wd_rows or self.wd_carry: return
@@ -901,6 +945,8 @@ class App:
         customs = self._custom()
         if any(v[1] == name for v in customs):
             p["custom"] = [v for v in customs if v[1] != name]
+            es = p.get("custom_es")
+            if isinstance(es, dict): es.pop(name, None)
         else:
             dele = self._deleted(); dele.add(name); p["deleted"] = sorted(dele)
         ds = self._disabled(); ds.discard(name); p["disabled"] = sorted(ds)
