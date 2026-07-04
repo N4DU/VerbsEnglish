@@ -1139,6 +1139,10 @@ class App:
                 ic.bind("<Button-1>", lambda _,c=col: self._play_col(c))
                 e = self._mk_entry(row); e.pack(side="left")
                 e.bind("<FocusIn>", lambda _,c=col: self._play_col(c))
+                # Replay on Space, intercepted at the widget level so the Entry
+                # class binding never inserts a literal space (answers are single
+                # words, so Space is free to mean "hear it again" here).
+                e.bind("<space>", lambda _,c=col: (self._play_col(c), "break")[1])
                 self.icons[col] = ic
             else:
                 # Reading: cached sentence for the picked answer, else any answer.
