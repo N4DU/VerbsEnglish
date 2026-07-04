@@ -1627,7 +1627,10 @@ class App:
         for child in widget.winfo_children(): self._collect_fonts(child)
 
     def _scale_fonts(self):
-        w = max(1, self.win.winfo_width()); h = max(1, self.win.winfo_height())
+        w = self.win.winfo_width(); h = self.win.winfo_height()
+        # Before the window is mapped winfo_* return 1; use the base size so
+        # fonts don't briefly render at 1px on the first frame.
+        if w <= 1 or h <= 1: w, h = BASE_W, BASE_H
         scale = min(w/BASE_W, h/BASE_H)
         dead = []
         for widget,(fam,size,wgt,slant) in list(self._base_fonts.items()):
