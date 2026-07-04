@@ -12,7 +12,7 @@ drop it (←) anywhere — including into another block.
 """
 import tkinter as tk
 import tkinter.font as tkfont
-import random, json, threading
+import os, random, json, threading
 
 import verbs_audio as audio
 from verbs_phrases import Cache, GEMINI_OK
@@ -142,10 +142,13 @@ class App:
         legacy = d.pop("settings", None)
         if isinstance(legacy, dict) and legacy.get("voice") and "voice" not in d:
             d["voice"] = legacy["voice"]
+        def _int(x):
+            try: return max(0, int(x))
+            except (TypeError, ValueError): return 0
         for cat in CATS:
             p = d.get(cat)
             if not isinstance(p, dict): p = {"completed":0}
-            p["completed"] = int(p.get("completed",0) or 0)
+            p["completed"] = _int(p.get("completed", 0))
             d[cat] = p
         d.setdefault("voice", "en-US-AriaNeural")
         d.setdefault("theme", "light")
@@ -154,7 +157,13 @@ class App:
         return d
 
     def _save_prog(self):
-        try: PROG_F.write_text(json.dumps(self.prog, indent=2, ensure_ascii=False), "utf-8")
+        # Atomic write: a crash mid-save can't corrupt progress.json
+        # (which holds custom words, block layout and progress).
+        try:
+            data = json.dumps(self.prog, indent=2, ensure_ascii=False)
+            tmp = PROG_F.with_suffix(".json.tmp")
+            tmp.write_text(data, "utf-8")
+            tmp.replace(PROG_F)
         except Exception: pass
 
     def _cat_prog(self, cat=None):
@@ -169,14 +178,20 @@ class App:
         self._save_prog()
 
     def _load_key(self):
+        # Environment variable wins, so users never have to edit a file.
+        env = os.environ.get("GEMINI_API_KEY", "").strip()
+        if env: return env
         try:
             d = json.loads(CONF_F.read_text("utf-8"))
             k = str(d.get("gemini_api_key","")).strip()
-            if k and k != "PONER_LA_KEY_AQUI": return k
+            placeholders = {"PONER_LA_KEY_AQUI", "TU_KEY_AQUI", "YOUR_API_KEY_HERE"}
+            if k and k not in placeholders: return k
         except Exception: pass
         return None
 
-    def _get_voice(self): return self.prog.get("voice", "en-US-AriaNeural")
+    def _get_voice(self):
+        v = self.prog.get("voice", "en-US-AriaNeural")
+        return v if any(v == k for k,_ in VOICES) else VOICES[0][0]
     def _set_voice(self, v): self.prog["voice"] = v; self._save_prog()
 
     def _mode(self):
@@ -376,7 +391,12 @@ class App:
                 .place(relx=.5,rely=.78,anchor="center")
         for i,l in enumerate(self.st_rows):
             l.bind("<Button-1>", lambda _,i=i: self._click_settings(i))
+            l.bind("<Enter>", lambda _,i=i: self._hover_settings(i))
         self._hint(f,"↑↓ Navigate      Enter Apply      Esc Back")
+
+    def _hover_settings(self, i):
+        if self.screen=="settings" and self.sti != i:
+            self.sti=i; self._draw_settings()
 
     def _open_settings(self):
         cur = self._get_voice()
@@ -445,6 +465,11 @@ class App:
                       "words":self.su_w,"ac":self.su_c,"ab":self.su_b,"an":self.su_n}
         for k,ww in self.su_wm.items():
             ww.bind("<Button-1>", lambda _,k=k: self._click_setup(k))
+            ww.bind("<Enter>", lambda _,k=k: self._hover_setup(k))
+
+    def _hover_setup(self, k):
+        if self.screen=="setup" and k in self.sr and self.si != self.sr.index(k):
+            self.si = self.sr.index(k); self._draw_setup()
 
     def _open_setup(self):
         info = CATS[self.cat]
@@ -501,6 +526,11 @@ class App:
         if listen:
             m = "☑" if self.prog.get("listen_hint", True) else "☐"
             self.su_h.config(text=f"{m}  Show Spanish word as a hint", fg=C["FG2"])
+        elif not self.key:
+            self.su_h.config(
+                text="No API key — you'll practice with blank fields."
+                     + ("  Try Listening (no key needed)." if audio.TTS_OK else ""),
+                fg=C["FG3"])
         else:
             self.su_h.config(text="")
 
@@ -705,9 +735,16 @@ class App:
 
     def _wd_drop(self):
         if not self.wd_carry: return
+        name = self.wd_carry
         self.wd_carry = None
-        self._wd_save_layout()
-        self._wd_refresh_all()
+        # drop can leave the source block empty — rebuild so its header goes away
+        if any(not b for b in self.wd_blocks):
+            self.wd_blocks = [b for b in self.wd_blocks if b] or [[]]
+            self._wd_save_layout()
+            self._words_rebuild(keep_name=name)
+        else:
+            self._wd_save_layout()
+            self._wd_refresh_all()
 
     def _wd_pos(self, name):
         for bi, blk in enumerate(self.wd_blocks):
@@ -1139,6 +1176,10 @@ class App:
                 ic.bind("<Button-1>", lambda _,c=col: self._play_col(c))
                 e = self._mk_entry(row); e.pack(side="left")
                 e.bind("<FocusIn>", lambda _,c=col: self._play_col(c))
+                # Replay on Space, intercepted at the widget level so the Entry
+                # class binding never inserts a literal space (answers are single
+                # words, so Space is free to mean "hear it again" here).
+                e.bind("<space>", lambda _,c=col: (self._play_col(c), "break")[1])
                 self.icons[col] = ic
             else:
                 # Reading: cached sentence for the picked answer, else any answer.
@@ -1303,7 +1344,11 @@ class App:
             l = self._lbl(f,"",14,cursor="hand2",anchor="w")
             l.place(relx=.34,rely=y,anchor="w"); self.blk_rows.append(l)
             l.bind("<Button-1>", lambda _,i=i: self._click_blk(i))
+            l.bind("<Enter>", lambda _,i=i: self._hover_blk(i))
         self._hint(f,"↑↓ Navigate      Enter Select      Esc Menu")
+
+    def _hover_blk(self, i):
+        if self.screen=="blk" and self.bi != i: self.bi=i; self._draw_blk()
 
     def _draw_blk(self):
         C = self.C
@@ -1332,7 +1377,11 @@ class App:
             l = self._lbl(f,"",14,cursor="hand2",anchor="w")
             l.place(relx=.34,rely=y,anchor="w"); self.fin_rows.append(l)
             l.bind("<Button-1>", lambda _,i=i: self._click_fin(i))
+            l.bind("<Enter>", lambda _,i=i: self._hover_fin(i))
         self._hint(f,"↑↓ Navigate      Enter Select      Esc Menu")
+
+    def _hover_fin(self, i):
+        if self.screen=="fin" and self.fi != i: self.fi=i; self._draw_fin()
 
     def _show_fin(self):
         self.fi = 0; self._show("fin"); self._draw_fin()

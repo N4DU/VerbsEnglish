@@ -24,7 +24,12 @@ class Cache:
         except Exception: pass
 
     def _save(self):
-        try: PHRA_F.write_text(json.dumps(self._d, indent=2, ensure_ascii=False), "utf-8")
+        # Atomic write so a crash mid-save can't corrupt the phrase cache.
+        try:
+            data = json.dumps(self._d, indent=2, ensure_ascii=False)
+            tmp = PHRA_F.with_suffix(".json.tmp")
+            tmp.write_text(data, "utf-8")
+            tmp.replace(PHRA_F)
         except Exception: pass
 
     @staticmethod
