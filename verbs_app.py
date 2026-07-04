@@ -68,7 +68,8 @@ class App:
                         ("<Right>",self._rt),("<Return>",self._en),
                         ("<space>",self._sp),("<Escape>",self._es),
                         ("<Key-a>",self._ka),("<Key-n>",self._kn),
-                        ("<Delete>",self._kdel)]:
+                        ("<Key-b>",self._kb),("<Key-r>",self._kr),
+                        ("<Delete>",self._kdel),("<Shift-Delete>",self._kdelblock)]:
             w.bind(key, fn)
         w.bind("<Configure>", self._on_resize)
         self._init_fonts()
@@ -626,7 +627,8 @@ class App:
             lambda e: self.wd_cv.config(scrollregion=self.wd_cv.bbox("all") or (0,0,0,0)))
         self.wd_cv.bind("<Configure>",
             lambda e: self.wd_cv.itemconfig(self.wd_win, width=e.width))
-        self._hint(f,"Space Toggle    → Pick up   ↑↓ Carry   ← Drop    N New    Del Delete    A Block on/off    Esc Done")
+        self._hint(f,"Space Toggle   →/↑↓/← Carry   N New word   B New block   "
+                     "Del Delete word   ⇧Del Delete block   A Block on/off   R Restore   Esc Done")
 
     def _open_words(self):
         self.wd_t.config(text=f"{CATS[self.cat]['title'].upper()} — WORD LIST")
@@ -650,10 +652,14 @@ class App:
             head = tk.Frame(self.wd_in, bg=C["BG"]); head.pack(fill="x", pady=(10 if bi else 2, 3))
             hl = tk.Label(head, text="", font=(self.FF,11,"bold"), bg=C["BG"], fg=C["ACC_D"])
             hl.pack(side="left", padx=(2,8))
-            ha = tk.Label(head, text="[ all ]", font=(self.FF,9), bg=C["BG"],
+            ha = tk.Label(head, text="[ toggle ]", font=(self.FF,9), bg=C["BG"],
                           fg=C["FG3"], cursor="hand2")
             ha.pack(side="left")
             ha.bind("<Button-1>", lambda _,b=bi: self._wd_toggle_block(b))
+            hd = tk.Label(head, text="[ delete ]", font=(self.FF,9), bg=C["BG"],
+                          fg=C["FG3"], cursor="hand2")
+            hd.pack(side="left", padx=(6,0))
+            hd.bind("<Button-1>", lambda _,b=bi: self._wd_delete_block(b))
             self.wd_heads[bi] = hl; self.wd_head_frames[bi] = head
 
             for name in blk:
@@ -809,6 +815,89 @@ class App:
         self.wd_blocks.append([])
         keep = self.wd_rows[self.wi]["name"] if self.wd_rows else None
         self._words_rebuild(keep_name=keep)
+
+    def _wd_delete_block(self, bi):
+        if self.wd_carry or not (0 <= bi < len(self.wd_blocks)): return
+        self.wd_del_pending = None
+        if len(self.wd_blocks) <= 1:
+            self.wd_sub.config(text="Can't delete the only block.", fg=self.C["RED"])
+            return
+        if not self.wd_blocks[bi]:            # empty block: just remove it
+            self.wd_blocks.pop(bi)
+            self._wd_save_layout(); self._words_rebuild()
+            return
+        self._wd_block_dialog(bi)
+
+    def _do_delete_block(self, bi, delete_words):
+        if not (0 <= bi < len(self.wd_blocks)): return
+        blk = list(self.wd_blocks[bi])
+        p = self._cat_prog()
+        if delete_words:
+            cust = {v[1] for v in self._custom()}
+            for name in blk:
+                if name in cust:
+                    p["custom"] = [v for v in self._custom() if v[1] != name]
+                    es = p.get("custom_es")
+                    if isinstance(es, dict): es.pop(name, None)
+                else:
+                    dele = self._deleted(); dele.add(name); p["deleted"] = sorted(dele)
+                ds = self._disabled(); ds.discard(name); p["disabled"] = sorted(ds)
+            self.wd_blocks.pop(bi)
+        else:                                 # keep the words: merge into a neighbour
+            self.wd_blocks.pop(bi)
+            if bi > 0: self.wd_blocks[bi-1].extend(blk)
+            else:      self.wd_blocks[0][0:0] = blk
+        if not self.wd_blocks: self.wd_blocks = [[]]
+        self._wd_save_layout(); self._words_rebuild()
+
+    def _wd_block_dialog(self, bi):
+        C = self.C; n = len(self.wd_blocks[bi])
+        dlg = tk.Toplevel(self.win)
+        dlg.title("Delete block"); dlg.transient(self.win)
+        try: dlg.grab_set()
+        except tk.TclError: pass
+        dlg.resizable(False, False); dlg.config(bg=C["BG"], padx=24, pady=20)
+        tk.Label(dlg, text=f"Delete block {bi+1}?", font=(self.FF,14,"bold"),
+                 bg=C["BG"], fg=C["FG"]).pack(pady=(0,4))
+        tk.Label(dlg, text=f"It has {n} word{'s' if n!=1 else ''}. "
+                           "What should happen to them?",
+                 font=(self.FF,10), bg=C["BG"], fg=C["FG2"]).pack(pady=(0,14))
+
+        opts = [("keep","Keep words (move to a nearby block)"),
+                ("delete","Delete the words too"),
+                ("cancel","Cancel")]
+        sel = [0]; labels = []
+        def render():
+            for i,(_,txt) in enumerate(opts):
+                on = i==sel[0]
+                labels[i].config(text=(PTR+txt) if on else "     "+txt,
+                                 bg=C["SEL"] if on else C["CARD"],
+                                 fg=C["FG"] if on else C["FG2"],
+                                 highlightbackground=C["ACC"] if on else C["BORDER"])
+        def choose(k):
+            dlg.destroy()
+            if k=="keep":   self._do_delete_block(bi, False)
+            elif k=="delete": self._do_delete_block(bi, True)
+        for i,(k,txt) in enumerate(opts):
+            l = tk.Label(dlg, text="", font=(self.FF,12), bg=C["CARD"], fg=C["FG2"],
+                         anchor="w", width=34, padx=12, pady=9, cursor="hand2",
+                         highlightthickness=1, highlightbackground=C["BORDER"])
+            l.pack(fill="x", pady=3); labels.append(l)
+            l.bind("<Button-1>", lambda _,k=k: choose(k))
+            l.bind("<Enter>", lambda _,i=i: (sel.__setitem__(0,i), render()))
+        tk.Label(dlg, text="↑↓ Move    Enter Select    Esc Cancel",
+                 font=(self.FF,9), bg=C["BG"], fg=C["FG3"]).pack(pady=(12,0))
+        def mv(d): sel[0]=max(0,min(sel[0]+d,len(opts)-1)); render()
+        dlg.bind("<Up>",     lambda _: mv(-1))
+        dlg.bind("<Down>",   lambda _: mv(1))
+        dlg.bind("<Return>", lambda _: choose(opts[sel[0]][0]))
+        dlg.bind("<Escape>", lambda _: choose("cancel"))
+        render()
+        dlg.update_idletasks()
+        x = self.win.winfo_rootx()+(self.win.winfo_width() -dlg.winfo_width()) //2
+        y = self.win.winfo_rooty()+(self.win.winfo_height()-dlg.winfo_height())//2
+        dlg.geometry(f"+{max(x,0)}+{max(y,0)}")
+        dlg.focus_set(); dlg.wait_window()
 
     def _wd_create_word(self, row, bi, es_past="", es_part=""):
         """row = [es, base, past] (+[part] for irregular); insert into block bi.
@@ -1226,6 +1315,9 @@ class App:
                 # class binding never inserts a literal space (answers are single
                 # words, so Space is free to mean "hear it again" here).
                 e.bind("<space>", lambda _,c=col: (self._play_col(c), "break")[1])
+                # Show the Spanish meaning as soon as there's text (neutral colour,
+                # so it never hints whether the answer is right); hide it when empty.
+                e.bind("<KeyRelease>", lambda _,c=col: self._listen_typing(c))
                 self.icons[col] = ic
             else:
                 # Reading: cached sentence for the picked answer, else any answer.
@@ -1321,14 +1413,24 @@ class App:
             return
         i = es.index(f); col = self.cur_cols[i]
         got = " ".join(es[i].get().split()).lower()
-        if got in self._expected_set(col):
-            if self._mode() == "listen" and col in self.icons:
-                # reveal the meaning of this exact form immediately
-                self.icons[col].config(text=self._meaning(col), fg=self.C["GREEN"])
-            elif audio.TTS_OK:
-                audio.play_path(self._audio.get(col))
+        # In reading mode, hearing the word on a correct answer is a nice touch.
+        # In listening mode we play nothing here (the meaning is already shown as
+        # you type, and colouring it now would leak whether you're right).
+        if got in self._expected_set(col) and self._mode() != "listen" and audio.TTS_OK:
+            audio.play_path(self._audio.get(col))
         if i < len(es)-1: es[i+1].focus_set()
         else: self._validate()
+
+    def _listen_typing(self, col):
+        """While typing in Listening mode, show this field's Spanish meaning
+        (neutral colour) if it has text, or hide it (back to ♫) when empty."""
+        if self.locked: return
+        e = self.entries.get(col); ic = self.icons.get(col)
+        if not e or not ic: return
+        if e.get().strip():
+            ic.config(text=self._meaning(col), fg=self.C["FG2"])
+        else:
+            ic.config(text=AUDIO_ICON, fg=self.C["ACC_D"])
 
     def _validate(self):
         C = self.C; bad = []
@@ -1527,9 +1629,24 @@ class App:
             self._wd_new_dialog()
             return "break"
 
+    def _kb(self, _):
+        if self.screen=="words" and not self.wd_carry:
+            self._wd_add_block()
+            return "break"
+
+    def _kr(self, _):
+        if self.screen=="words" and not self.wd_carry:
+            self._wd_restore()
+            return "break"
+
     def _kdel(self, _):
         if self.screen=="words":
             self._wd_delete()
+            return "break"
+
+    def _kdelblock(self, _):
+        if self.screen=="words" and self.wd_rows and not self.wd_carry:
+            self._wd_delete_block(self.wd_rows[self.wi]["bi"])
             return "break"
 
     def _es(self, _):
