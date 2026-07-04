@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Verb Practice — entry point.
 
-Run:  python VerbsEnglish.py
+Run:  python main.py
 
 The code lives in:
   verbs_data.py     verb lists, themes, constants
-  verbs_audio.py    text-to-speech (edge-tts + pygame)
+  verbs_audio.py    text-to-speech: generation, disk cache, safe playback
   verbs_phrases.py  sentence cache backed by Gemini AI
   verbs_app.py      the application (UI + session logic)
 """

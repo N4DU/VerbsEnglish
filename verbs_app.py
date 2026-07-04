@@ -47,6 +47,15 @@ class App:
         self._anim_i = 0; self.screen = "menu"
         self._last_size = (0,0); self._resize_job = None
 
+        # clean cached audio of words that no longer exist in the verb lists
+        if audio.TTS_OK:
+            valid = set()
+            for info in CATS.values():
+                for v in info["verbs"]:
+                    for raw in v[1:]:
+                        valid.update(self._answer_parts(raw))
+            threading.Thread(target=audio.prune, args=(valid,), daemon=True).start()
+
         self._build()
         for key, fn in [("<Up>",self._up),("<Down>",self._dn),("<Left>",self._lt),
                         ("<Right>",self._rt),("<Return>",self._en),
@@ -767,11 +776,31 @@ class App:
 
     def _begin(self):
         self._show("prac"); self._load_verb()
-        # prefetch the next block in the background (reading mode only)
+        # pre-generate audio for this block (and the next) so playback is instant
+        blocks = [self._cur_block()]
+        if self.bidx+1 < len(self.sblocks): blocks.append(self.sblocks[self.bidx+1])
+        self._prefetch_audio(blocks)
+        # prefetch the next block's sentences in the background (reading mode)
         if (self._mode() != "listen" and self.key and GEMINI_OK
                 and self.bidx+1 < len(self.sblocks)):
             nxt = self._block_needed(self.sblocks[self.bidx+1])
             if nxt: self.cache.fetch(nxt, self.key, lambda _: None)
+
+    def _prefetch_audio(self, blocks):
+        """Generate + cache TTS for every word of the given blocks, one by one."""
+        if not audio.TTS_OK: return
+        voice = self._get_voice()
+        idx_map = {"base":1,"past":2,"part":3}
+        words = []
+        for b in blocks:
+            for verb in b:
+                for col in self.cols:
+                    words.extend(self._answer_parts(verb[idx_map[col]]))
+        def run():
+            for w_ in dict.fromkeys(words):
+                try: audio.ensure(w_, voice)
+                except Exception: pass
+        threading.Thread(target=run, daemon=True).start()
 
     # ── Practice screen ───────────────────────────────────────────────────────
     def _bld_prac(self):
@@ -847,8 +876,8 @@ class App:
             if listen:
                 self.phrases[col] = {"s": None, "a": ans}
                 row = tk.Frame(fw, bg=C["BG"]); row.pack()
-                ic = tk.Label(row, text=AUDIO_ICON, font=(self.FF,15,"bold"),
-                              bg=C["BG"], fg=C["ACC_D"], cursor="hand2", width=14)
+                ic = tk.Label(row, text=AUDIO_ICON, font=(self.FF,13,"bold"),
+                              bg=C["BG"], fg=C["ACC_D"], cursor="hand2", width=19)
                 ic.pack(side="left", padx=(0,6))
                 ic.bind("<Button-1>", lambda _,c=col: self._play_col(c))
                 e = self._mk_entry(row); e.pack(side="left")
@@ -885,14 +914,18 @@ class App:
         self._collect_fonts(self.pr_ff); self._scale_fonts()
 
     def _preload_audio(self):
-        """Pre-generate TTS for the answer words."""
+        """Resolve the audio file for each answer word (instant when cached)."""
         if not audio.TTS_OK: return
         voice = self._get_voice()
         for col, obj in self.phrases.items():
             ans = obj.get("a") or ""
             if not ans: continue
+            path = audio.get_cached(ans, voice)
+            if path:
+                self._audio[col] = path
+                continue
             def gen(c=col, t=ans, v=voice):
-                try: self._audio[c] = audio.generate(t, v)
+                try: self._audio[c] = audio.ensure(t, v)
                 except Exception: pass
             threading.Thread(target=gen, daemon=True).start()
 
@@ -901,9 +934,9 @@ class App:
         if not audio.TTS_OK: return
         if token is None: token = self._vt
         if token != self._vt or self.screen != "prac": return
-        data = self._audio.get(col)
-        if data:
-            threading.Thread(target=audio.play, args=(data,), daemon=True).start()
+        path = self._audio.get(col)
+        if path:
+            audio.play_path(path)
         elif tries > 0:
             self.win.after(350, lambda: self._play_col(col, tries-1, token))
 
@@ -938,10 +971,12 @@ class App:
             return
         i = es.index(f); col = self.cur_cols[i]
         got = " ".join(es[i].get().split()).lower()
-        if (got in self._expected_set(col) and audio.TTS_OK
-                and self._mode() != "listen"):
-            data = self._audio.get(col)
-            if data: threading.Thread(target=audio.play, args=(data,), daemon=True).start()
+        if got in self._expected_set(col):
+            if self._mode() == "listen" and col in self.icons:
+                # reveal the meaning of this word immediately
+                self.icons[col].config(text=self._cur_verb()[0], fg=self.C["GREEN"])
+            elif audio.TTS_OK:
+                audio.play_path(self._audio.get(col))
         if i < len(es)-1: es[i+1].focus_set()
         else: self._validate()
 
@@ -961,9 +996,9 @@ class App:
                 bad.append(self._expected_main(col))
             e.config(state="disabled")
             if listen and col in self.icons:
-                # reveal which form this audio was
-                name = next(l for k,l,_ in COLS if k==col)
-                self.icons[col].config(text=name, fg=C["GREEN"] if ok else C["RED"])
+                # reveal the Spanish meaning of the word that was spoken
+                self.icons[col].config(text=self._cur_verb()[0],
+                                       fg=C["GREEN"] if ok else C["RED"])
         self.locked = True
         if bad:
             self.bad_n += 1; self.blk_bad += 1
