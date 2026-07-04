@@ -9,7 +9,7 @@ Audio cache: generated words are stored as mp3 files in audio_cache/
 (one per word+voice), so replays and future sessions are instant.
 prune() deletes files for words that no longer exist in the verb lists.
 """
-import queue, threading
+import os, queue, threading
 from pathlib import Path
 
 try:
@@ -51,15 +51,22 @@ def get_cached(word, voice):
 
 def ensure(word, voice):
     """Return the cached mp3 path, generating it first if needed."""
+    dest = cache_path(word, voice)
     p = get_cached(word, voice)
     if p: return p
     data = generate(word, voice)
     if not data: return None
     AUDIO_DIR.mkdir(exist_ok=True)
-    tmp = cache_path(word, voice).with_suffix(".tmp")
-    tmp.write_bytes(data)
-    tmp.replace(cache_path(word, voice))
-    return cache_path(word, voice)
+    # Unique temp name per call: two threads generating the same word must not
+    # write to (and rename from) the same temp file, which would corrupt it.
+    tmp = dest.with_suffix(f".{os.getpid()}.{threading.get_ident()}.tmp")
+    try:
+        tmp.write_bytes(data)
+        tmp.replace(dest)
+    finally:
+        try: tmp.unlink()
+        except OSError: pass
+    return dest if dest.exists() else None
 
 def prune(valid_words):
     """Delete cached audio for words that are no longer in the verb lists."""
@@ -70,6 +77,9 @@ def prune(valid_words):
             if word not in valid:
                 try: f.unlink()
                 except Exception: pass
+        for f in AUDIO_DIR.glob("*.tmp"):   # sweep temp files left by a crash
+            try: f.unlink()
+            except Exception: pass
     except Exception: pass
 
 # ── Playback (single worker thread owns the mixer) ────────────────────────────
