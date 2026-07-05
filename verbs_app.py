@@ -52,7 +52,7 @@ class App:
         self._anim_i = 0; self.screen = "menu"
         self._last_size = (0,0); self._resize_job = None
         # word-list editor state
-        self.wd_blocks = []; self.wd_carry = None
+        self.wd_blocks = []; self.wd_carry = None; self._wd_fs = 1.0
         self.wd_nav = []; self.wd_recs = {}; self.wd_block_items = []; self.wd_tail = []
 
         # clean cached audio of words that no longer exist in the verb lists
@@ -629,16 +629,26 @@ class App:
         if not self.wd_blocks: self.wd_blocks = [[]]
         self.wd_carry = None
         self.wi = 0
-        self._words_rebuild()
+        # show the screen instantly, then build the list — so the button feels
+        # immediate instead of freezing while ~250 rows are created
+        self.wd_sub.config(text="Loading words…", fg=self.C["FG3"])
+        self.wd_nav = []
         self._show("words")
+        self.win.after_idle(self._words_rebuild)
 
     # The word list is a single keyboard-navigable column: block headers, word
     # rows, and inline action items ("Add a word", "Delete this block",
     # "New block", "Restore"). ↑↓ moves between all of them, Enter activates the
     # focused one — no hidden letter shortcuts. → picks a word up to slide it.
+    def _wd_font(self, size, bold=False):
+        """A ready-scaled font tuple — no tkfont.actual() round-trips (those
+        made rebuilding the big list slow and flickery)."""
+        sz = max(1, int(size * self._wd_fs))
+        return (self.FF, sz, "bold") if bold else (self.FF, sz)
+
     def _wd_action(self, core, kind, bi=None, indent=False):
         C = self.C
-        lbl = tk.Label(self.wd_in, text="", font=(self.FF,10), bg=C["BG"],
+        lbl = tk.Label(self.wd_in, text="", font=self._wd_font(10), bg=C["BG"],
                        fg=C["ACC_D"], cursor="hand2", anchor="w")
         lbl.pack(fill="x", pady=1)
         it = {"kind":kind, "bi":bi, "frame":lbl, "lbl":lbl, "core":core, "indent":indent}
@@ -647,20 +657,23 @@ class App:
 
     def _words_rebuild(self, keep_name=None, keep_kind=None, keep_bi=None):
         C = self.C
+        self._wd_fs = self._font_scale()   # scale fonts once, cheaply, at creation
+        F  = self._wd_font
         # Build the whole list into a FRESH off-screen frame, then swap it into
         # the canvas in one shot. Rebuilding the visible frame in place made Tk
         # repaint the half-built (blank) state — that was the flicker.
         old_in = self.wd_in
         self.wd_in = tk.Frame(self.wd_cv, bg=C["BG"])
-        self.wd_in.bind("<Configure>",
-            lambda e: self.wd_cv.config(scrollregion=self.wd_cv.bbox("all") or (0,0,0,0)))
+        # NB: the <Configure> → scrollregion binding is attached AFTER the build
+        # (below). Binding it now makes every one of the ~250 packs recompute
+        # bbox("all") — a needless storm that slowed the rebuild down.
         self.wd_recs = {}; self.wd_block_items = []
         vd = self._vdict()
         customs = {v[1] for v in self._custom()}
         has_part = CATS[self.cat]["has_part"]
 
         for bi, blk in enumerate(self.wd_blocks):
-            hdr = tk.Label(self.wd_in, text="", font=(self.FF,11,"bold"),
+            hdr = tk.Label(self.wd_in, text="", font=F(11, bold=True),
                            bg=C["BG"], fg=C["ACC_D"], cursor="hand2", anchor="w")
             hdr.pack(fill="x", pady=(12 if bi else 2, 3))
             hitem = {"kind":"toggle", "bi":bi, "frame":hdr, "lbl":hdr}
@@ -673,10 +686,10 @@ class App:
                                highlightthickness=0, highlightbackground=C["ACC"])
                 row.pack(fill="x", pady=1)
                 forms = " · ".join(v[1:4] if has_part else v[1:3])
-                l = tk.Label(row, text="", font=(self.FF,11), bg=C["BG"], anchor="w")
+                l = tk.Label(row, text="", font=F(11), bg=C["BG"], anchor="w")
                 l.pack(side="left", padx=(20,0))
                 r = tk.Label(row, text=v[0]+("  •" if name in customs else ""),
-                             font=(self.FF,10), bg=C["BG"], fg=C["FG3"], anchor="e")
+                             font=F(10), bg=C["BG"], fg=C["FG3"], anchor="e")
                 r.pack(side="right", padx=(0,14))
                 rec = {"kind":"word","name":name,"bi":bi,"frame":row,
                        "l":l,"r":r,"forms":forms}
@@ -701,12 +714,18 @@ class App:
                 if it["kind"]==keep_kind and it.get("bi")==keep_bi: idx=j; break
         self.wi = idx if idx is not None else max(0, min(self.wi, len(self.wd_nav)-1))
         self._wd_refresh_all()
-        self._collect_fonts(self.wd_in); self._scale_fonts()
+        # NOTE: the word list is intentionally NOT registered with the global
+        # font scaler — its fonts are already scaled above, and querying each
+        # widget's font via tkfont.actual() (what _collect_fonts does) made this
+        # rebuild ~4x slower and caused the flicker.
         # swap the finished frame in, then drop the old one — a single repaint
         self.wd_cv.itemconfigure(self.wd_win, window=self.wd_in)
         self.wd_cv.itemconfig(self.wd_win, width=max(1, self.wd_cv.winfo_width()))
         self.wd_cv.update_idletasks()
         self.wd_cv.config(scrollregion=self.wd_cv.bbox("all") or (0,0,0,0))
+        # now (after layout is settled) watch for future size changes
+        self.wd_in.bind("<Configure>",
+            lambda e: self.wd_cv.config(scrollregion=self.wd_cv.bbox("all") or (0,0,0,0)))
         try: old_in.destroy()
         except tk.TclError: pass
         self.wd_cv.yview_moveto(0)
@@ -819,15 +838,23 @@ class App:
         it = self.wd_nav[self.wi]
         if it["kind"] != "word": return
         self.wd_carry = it["name"]
-        self._wd_refresh_all()
+        # only the picked row (now marked) and the subtitle change
+        self._wd_refresh_item(self.wi); self._wd_refresh_subtitle()
 
     def _wd_drop(self):
         if not self.wd_carry: return
         name = self.wd_carry; self.wd_carry = None
         if any(not b for b in self.wd_blocks):
+            # a block was emptied by the move — rebuild to drop its header
             self.wd_blocks = [b for b in self.wd_blocks if b] or [[]]
-        self._wd_save_layout()
-        self._words_rebuild(keep_name=name)
+            self._wd_save_layout()
+            self._words_rebuild(keep_name=name)
+        else:
+            # the row is already in place from the live slide — no rebuild
+            self._wd_save_layout()
+            if name in self.wd_recs:
+                self._wd_refresh_item(self.wd_nav.index(self.wd_recs[name]))
+            self._wd_refresh_subtitle()
 
     def _wd_pos(self, name):
         for bi, blk in enumerate(self.wd_blocks):
@@ -1838,12 +1865,15 @@ class App:
         except tk.TclError: pass
         for child in widget.winfo_children(): self._collect_fonts(child)
 
-    def _scale_fonts(self):
+    def _font_scale(self):
         w = self.win.winfo_width(); h = self.win.winfo_height()
         # Before the window is mapped winfo_* return 1; use the base size so
         # fonts don't briefly render at 1px on the first frame.
         if w <= 1 or h <= 1: w, h = BASE_W, BASE_H
-        scale = min(w/BASE_W, h/BASE_H)
+        return min(w/BASE_W, h/BASE_H)
+
+    def _scale_fonts(self):
+        scale = self._font_scale()
         dead = []
         for widget,(fam,size,wgt,slant) in list(self._base_fonts.items()):
             try:
