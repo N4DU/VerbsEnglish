@@ -647,7 +647,13 @@ class App:
 
     def _words_rebuild(self, keep_name=None, keep_kind=None, keep_bi=None):
         C = self.C
-        for ch in self.wd_in.winfo_children(): ch.destroy()
+        # Build the whole list into a FRESH off-screen frame, then swap it into
+        # the canvas in one shot. Rebuilding the visible frame in place made Tk
+        # repaint the half-built (blank) state — that was the flicker.
+        old_in = self.wd_in
+        self.wd_in = tk.Frame(self.wd_cv, bg=C["BG"])
+        self.wd_in.bind("<Configure>",
+            lambda e: self.wd_cv.config(scrollregion=self.wd_cv.bbox("all") or (0,0,0,0)))
         self.wd_recs = {}; self.wd_block_items = []
         vd = self._vdict()
         customs = {v[1] for v in self._custom()}
@@ -696,6 +702,13 @@ class App:
         self.wi = idx if idx is not None else max(0, min(self.wi, len(self.wd_nav)-1))
         self._wd_refresh_all()
         self._collect_fonts(self.wd_in); self._scale_fonts()
+        # swap the finished frame in, then drop the old one — a single repaint
+        self.wd_cv.itemconfigure(self.wd_win, window=self.wd_in)
+        self.wd_cv.itemconfig(self.wd_win, width=max(1, self.wd_cv.winfo_width()))
+        self.wd_cv.update_idletasks()
+        self.wd_cv.config(scrollregion=self.wd_cv.bbox("all") or (0,0,0,0))
+        try: old_in.destroy()
+        except tk.TclError: pass
         self.wd_cv.yview_moveto(0)
         if keep_name or keep_kind is not None:
             self.win.after(50, lambda: self._wd_scroll_to(self.wi))
@@ -713,16 +726,23 @@ class App:
         self.wd_nav = nav
 
     def _wd_refresh_all(self):
-        C = self.C; ds = self._disabled()
         for i in range(len(self.wd_nav)): self._wd_refresh_item(i)
-        en_total = sum(1 for blk in self.wd_blocks for n in blk if n not in ds)
+        self._wd_refresh_subtitle()
+
+    def _wd_refresh_subtitle(self):
+        C = self.C
         if self.wd_carry:
             self.wd_sub.config(fg=C["ACC_D"],
                 text=f"Moving “{self.wd_carry}” —  ↑↓ to slide it,  ← to drop it here")
         else:
+            en = sum(1 for blk in self.wd_blocks for n in blk if n not in self._disabled())
             self.wd_sub.config(fg=C["FG3"],
-                text=f"{en_total} words on  ·  {len(self.wd_blocks)} blocks  ·  "
+                text=f"{en} words on  ·  {len(self.wd_blocks)} blocks  ·  "
                      "everything saves automatically")
+
+    def _wd_refresh_headers(self):
+        for i, it in enumerate(self.wd_nav):
+            if it["kind"] == "toggle": self._wd_refresh_item(i)
 
     def _wd_refresh_item(self, i):
         C = self.C; it = self.wd_nav[i]; sel = (i == self.wi); k = it["kind"]
@@ -780,7 +800,11 @@ class App:
         if name in ds: ds.discard(name)
         else: ds.add(name)
         self._set_disabled(ds)
-        self._wd_refresh_all()
+        # only this row, the block headers (counts) and the subtitle change
+        if name in self.wd_recs:
+            try: self._wd_refresh_item(self.wd_nav.index(self.wd_recs[name]))
+            except ValueError: pass
+        self._wd_refresh_headers(); self._wd_refresh_subtitle()
 
     def _wd_toggle_block(self, bi):
         blk = self.wd_blocks[bi]; ds = self._disabled()
@@ -841,7 +865,10 @@ class App:
                               after=self.wd_block_items[bi]["header"]["frame"])
         self._rebuild_nav()
         self.wi = self.wd_nav.index(rec)
-        self._wd_refresh_all()
+        # only the sliding row and the block headers (counts) change — not all
+        # ~480 rows — so sliding stays instant and flicker-free
+        self._wd_refresh_item(self.wi)
+        self._wd_refresh_headers()
         self._wd_scroll_to(self.wi)
 
     # — create / delete / restore —
