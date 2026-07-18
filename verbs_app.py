@@ -12,7 +12,7 @@ drop it (←) anywhere — including into another block.
 """
 import tkinter as tk
 import tkinter.font as tkfont
-import os, random, json, threading
+import os, random, json, threading, webbrowser
 
 import verbs_audio as audio
 from verbs_phrases import Cache, GEMINI_OK
@@ -392,20 +392,21 @@ class App:
     # ── Settings screen ───────────────────────────────────────────────────────
     def _bld_settings(self):
         f = self.fr["settings"]; C = self.C
-        self._lbl(f,"SETTINGS",18,C["FG"],bold=True).place(relx=.5,rely=.08,anchor="n")
-        self._lbl(f,"Voice",11,C["FG3"]).place(relx=.24,rely=.26,anchor="w")
+        self._lbl(f,"SETTINGS",18,C["FG"],bold=True).place(relx=.5,rely=.055,anchor="n")
         self.st_rows = []
-        ys = [.33,.41, .57,.65]
-        for y in ys[:2]:
+        def row(y):
             l = self._lbl(f,"",13,cursor="hand2",anchor="w")
             l.place(relx=.27,rely=y,anchor="w"); self.st_rows.append(l)
-        self._lbl(f,"Theme",11,C["FG3"]).place(relx=.24,rely=.50,anchor="w")
-        for y in ys[2:]:
-            l = self._lbl(f,"",13,cursor="hand2",anchor="w")
-            l.place(relx=.27,rely=y,anchor="w"); self.st_rows.append(l)
+        self._lbl(f,"Voice",11,C["FG3"]).place(relx=.24,rely=.19,anchor="w")
+        row(.26); row(.33)
+        self._lbl(f,"Theme",11,C["FG3"]).place(relx=.24,rely=.43,anchor="w")
+        row(.50); row(.57)
+        self._lbl(f,"Gemini AI  (writes the sentences for Reading mode)",11,C["FG3"])\
+            .place(relx=.24,rely=.67,anchor="w")
+        row(.74)
         if not audio.TTS_OK:
             self._lbl(f,"(voice disabled: edge-tts / pygame not installed)",10,C["RED"])\
-                .place(relx=.5,rely=.78,anchor="center")
+                .place(relx=.5,rely=.87,anchor="center")
         for i,l in enumerate(self.st_rows):
             l.bind("<Button-1>", lambda _,i=i: self._click_settings(i))
             l.bind("<Enter>", lambda _,i=i: self._hover_settings(i))
@@ -420,6 +421,9 @@ class App:
         self.sti = next((i for i,(k,_) in enumerate(VOICES) if k==cur), 0)
         self._show("settings"); self._draw_settings()
 
+    def _mask_key(self, k):
+        return f"{k[:4]}…{k[-4:]}" if len(k) >= 10 else "•"*len(k)
+
     def _draw_settings(self):
         C = self.C; cur = self._get_voice(); theme = self.prog.get("theme","light")
         opts = [ (k==cur, lbl) for k,lbl in VOICES ]
@@ -429,17 +433,101 @@ class App:
             self.st_rows[i].config(
                 text=(PTR if i==self.sti else "   ")+mark+txt,
                 fg=C["FG"] if i==self.sti else C["FG2"])
+        if os.environ.get("GEMINI_API_KEY","").strip():
+            ktxt = "API key:  using GEMINI_API_KEY from the environment"
+        elif self.key:
+            ktxt = f"API key:  ✓ saved ({self._mask_key(self.key)})   —   Enter to change"
+        else:
+            ktxt = "API key:  not set   —   Enter to add one (it's free)"
+        self.st_rows[4].config(
+            text=(PTR if self.sti==4 else "   ")+ktxt,
+            fg=C["FG"] if self.sti==4 else C["FG2"])
 
     def _sel_settings(self):
         if self.sti < 2:
             self._set_voice(VOICES[self.sti][0]); self._draw_settings()
-        else:
+        elif self.sti < 4:
             theme = "light" if self.sti==2 else "dark"
             if theme != self.prog.get("theme"):
                 self.prog["theme"] = theme; self._save_prog()
                 self._apply_theme()
             else:
                 self._draw_settings()
+        else:
+            self._key_dialog()
+
+    def _save_key(self, k):
+        """Persist the Gemini key locally (config.json is git-ignored)."""
+        k = (k or "").strip()
+        self.key = k or None
+        try:
+            data = json.dumps({"gemini_api_key": k}, indent=2)
+            tmp = CONF_F.with_suffix(".json.tmp")
+            tmp.write_text(data, "utf-8")
+            tmp.replace(CONF_F)
+        except Exception: pass
+
+    def _key_dialog(self):
+        C = self.C
+        dlg = tk.Toplevel(self.win); dlg.title("Gemini API key"); dlg.transient(self.win)
+        try: dlg.grab_set()
+        except tk.TclError: pass
+        dlg.resizable(False, False); dlg.config(bg=C["BG"], padx=26, pady=20)
+
+        tk.Label(dlg, text="Gemini API key", font=(self.FF,14,"bold"),
+                 bg=C["BG"], fg=C["FG"]).pack()
+        tk.Label(dlg, text="Reading mode uses Google's Gemini AI to write practice\n"
+                           "sentences. That needs a free API key. It is saved only on\n"
+                           "this computer and is never uploaded anywhere else.",
+                 font=(self.FF,10), bg=C["BG"], fg=C["FG2"], justify="left")\
+            .pack(pady=(6,4))
+        link = tk.Label(dlg, text="Get a free key at  aistudio.google.com/apikey",
+                        font=(self.FF,10,"underline"), bg=C["BG"], fg=C["ACC_D"],
+                        cursor="hand2")
+        link.pack(pady=(0,10))
+        link.bind("<Button-1>", lambda _: webbrowser.open("https://aistudio.google.com/apikey"))
+
+        e = tk.Entry(dlg, font=(self.FF,11), width=44, bg=C["ENTRY"], fg=C["FG"],
+                     insertbackground=C["FG"], bd=0, highlightthickness=1,
+                     highlightbackground=C["BORDER"], highlightcolor=C["ACC"])
+        e.pack(pady=(0,4))
+        if self.key: e.insert(0, self.key)
+        msg = tk.Label(dlg, text="", font=(self.FF,9), bg=C["BG"], fg=C["RED"])
+        msg.pack()
+        if os.environ.get("GEMINI_API_KEY","").strip():
+            msg.config(text="Note: the GEMINI_API_KEY environment variable is set "
+                            "and takes priority.", fg=C["FG3"])
+
+        def save(_=None):
+            k = e.get().strip()
+            if not k:
+                msg.config(text="Paste your key first (or use Remove).", fg=C["RED"])
+                return
+            self._save_key(k); dlg.destroy(); self._draw_settings()
+        def remove(_=None):
+            self._save_key(""); dlg.destroy(); self._draw_settings()
+        def cancel(_=None): dlg.destroy()
+
+        bf = tk.Frame(dlg, bg=C["BG"]); bf.pack(pady=(8,0))
+        btns = [("Save", save)] + ([("Remove key", remove)] if self.key else []) \
+             + [("Cancel", cancel)]
+        for txt, cmd in btns:
+            b = tk.Label(bf, text=txt, font=(self.FF,11), bg=C["CARD"], fg=C["FG"],
+                         padx=14, pady=7, cursor="hand2",
+                         highlightthickness=1, highlightbackground=C["BORDER"])
+            b.pack(side="left", padx=5)
+            b.bind("<Button-1>", cmd)
+            b.bind("<Enter>", lambda _,b=b: b.config(bg=C["SEL"]))
+            b.bind("<Leave>", lambda _,b=b: b.config(bg=C["CARD"]))
+        tk.Label(dlg, text="Enter Save      Esc Cancel", font=(self.FF,9),
+                 bg=C["BG"], fg=C["FG3"]).pack(pady=(10,0))
+
+        dlg.bind("<Return>", save); dlg.bind("<Escape>", cancel)
+        dlg.update_idletasks()
+        x = self.win.winfo_rootx()+(self.win.winfo_width() -dlg.winfo_width()) //2
+        y = self.win.winfo_rooty()+(self.win.winfo_height()-dlg.winfo_height())//2
+        dlg.geometry(f"+{max(x,0)}+{max(y,0)}")
+        e.focus_set(); dlg.wait_window()
 
     def _click_settings(self, i):
         self.sti = i; self._draw_settings(); self._sel_settings()
@@ -545,8 +633,9 @@ class App:
             self.su_h.config(text=f"{m}  Show Spanish word as a hint", fg=C["FG2"])
         elif not self.key:
             self.su_h.config(
-                text="No API key — you'll practice with blank fields."
-                     + ("  Try Listening (no key needed)." if audio.TTS_OK else ""),
+                text="No API key — you'll practice with blank fields.  Add one in "
+                     "Settings" + (" or try Listening (no key needed)." if audio.TTS_OK
+                                   else "."),
                 fg=C["FG3"])
         else:
             self.su_h.config(text="")
@@ -1318,7 +1407,7 @@ class App:
         if results: self._begin()
         else:
             self.ld_msg.config(text="Could not load sentences.")
-            self.ld_err.config(text="Check your API key and internet connection.")
+            self.ld_err.config(text="Check your API key (in Settings) and your internet connection.")
             self.ld_ret.config(text="▶ Retry")
             self.ld_off.config(text="▶ Practice without sentences")
 
@@ -1722,7 +1811,7 @@ class App:
         elif s=="prac":     self._mv(1)
         elif s=="blk":      self.bi=min(2,self.bi+1);              self._draw_blk()
         elif s=="fin":      self.fi=min(1,self.fi+1);              self._draw_fin()
-        elif s=="settings": self.sti=min(3,self.sti+1);            self._draw_settings()
+        elif s=="settings": self.sti=min(4,self.sti+1);            self._draw_settings()
 
     def _lt(self, _):
         s = self.screen
