@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
 audio_cache/
+
+# Datos locales del usuario — nunca se suben al repo
+config.json
+progress.json
