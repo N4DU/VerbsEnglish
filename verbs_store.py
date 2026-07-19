@@ -115,18 +115,20 @@ class Store:
         names = list(self.vdict(cat))
         known = set(names)
         p = self.cat_prog(cat)
+        # keep empty blocks — they're legitimate in the editor (you can add
+        # words to them). the practice flow filters empties out on its own.
         lay, seen = [], set()
         for blk in (p.get("layout") or []):
             if not isinstance(blk, list): continue
             b = [n for n in blk if n in known and n not in seen]
             seen.update(b)
-            if b: lay.append(b)
+            lay.append(b)
         missing = [n for n in names if n not in seen]
-        if not lay:
-            lay = [missing[i:i+BLOCK] for i in range(0, len(missing), BLOCK)]
+        if not any(lay):
+            lay = [missing[i:i+BLOCK] for i in range(0, len(missing), BLOCK)] or [[]]
         else:
             for n in missing:
-                if len(lay[-1]) < BLOCK: lay[-1].append(n)
+                if lay and len(lay[-1]) < BLOCK: lay[-1].append(n)
                 else: lay.append([n])
         p["layout"] = lay
         return lay
@@ -181,3 +183,129 @@ class Store:
             for p in self.answer_parts(raw):
                 ok.add(p); ok.update(ALT_FORMS.get(p, ()))
         return sorted(ok)
+
+    # ── word-list editor (all mutations live here, shared by any UI) ──────────
+    def editor_state(self, cat):
+        """Everything the editor needs to render the word list."""
+        vd, ds = self.vdict(cat), self.disabled(cat)
+        customs = {v[1] for v in self.custom(cat)}
+        has_part = CATS[cat]["has_part"]
+        blocks = []
+        for blk in self.layout(cat):
+            rows = []
+            for name in blk:
+                v = vd.get(name)
+                if not v: continue
+                rows.append({"name": name, "es": v[0],
+                             "forms": list(v[1:4] if has_part else v[1:3]),
+                             "on": name not in ds, "custom": name in customs})
+            blocks.append(rows)
+        return {"cat": cat, "title": CATS[cat]["title"], "has_part": has_part,
+                "blocks": blocks, "deleted": len(self.deleted(cat)),
+                "total": len(vd), "on": self.enabled_count(cat)}
+
+    def _blocks_names(self, cat):
+        vd = set(self.vdict(cat))
+        return [[n for n in blk if n in vd] for blk in self.layout(cat)]
+
+    def _save_layout(self, cat, blocks):
+        # keep empty blocks (the editor may hold empties on purpose)
+        self.cat_prog(cat)["layout"] = [list(b) for b in blocks] or [[]]
+        self.save()
+
+    def _set_disabled(self, cat, names):
+        self.cat_prog(cat)["disabled"] = sorted(names)
+        self.save()
+
+    def toggle_word(self, cat, name):
+        ds = self.disabled(cat)
+        ds.discard(name) if name in ds else ds.add(name)
+        self._set_disabled(cat, ds)
+
+    def toggle_block(self, cat, i):
+        blocks = self._blocks_names(cat)
+        if not (0 <= i < len(blocks)): return
+        blk, ds = blocks[i], self.disabled(cat)
+        if any(n in ds for n in blk): ds.difference_update(blk)
+        else: ds.update(blk)
+        self._set_disabled(cat, ds)
+
+    def move_word(self, cat, name, d):
+        """Slide a word one step (crossing block borders); returns new layout."""
+        blocks = self._blocks_names(cat)
+        bi = pos = None
+        for i, blk in enumerate(blocks):
+            if name in blk: bi, pos = i, blk.index(name); break
+        if bi is None: return
+        blk = blocks[bi]
+        if d > 0:
+            if pos < len(blk) - 1: blk[pos], blk[pos+1] = blk[pos+1], blk[pos]
+            elif bi < len(blocks) - 1: blk.pop(pos); blocks[bi+1].insert(0, name)
+            else: return
+        else:
+            if pos > 0: blk[pos-1], blk[pos] = blk[pos], blk[pos-1]
+            elif bi > 0: blk.pop(pos); blocks[bi-1].append(name)
+            else: return
+        self._save_layout(cat, blocks)
+
+    def add_block(self, cat):
+        blocks = self._blocks_names(cat); blocks.append([])
+        self._save_layout(cat, blocks)
+
+    def delete_block(self, cat, i, keep_words):
+        blocks = self._blocks_names(cat)
+        if not (0 <= i < len(blocks)) or len(blocks) <= 1: return
+        blk = blocks.pop(i)
+        if keep_words:
+            if i > 0: blocks[i-1].extend(blk)
+            elif blocks: blocks[0][0:0] = blk
+            else: blocks = [blk]
+        else:
+            p = self.cat_prog(cat); cust = {v[1] for v in self.custom(cat)}
+            for name in blk:
+                if name in cust:
+                    p["custom"] = [v for v in self.custom(cat) if v[1] != name]
+                    es = p.get("custom_es")
+                    if isinstance(es, dict): es.pop(name, None)
+                else:
+                    d = self.deleted(cat); d.add(name); p["deleted"] = sorted(d)
+                ds = self.disabled(cat); ds.discard(name); p["disabled"] = sorted(ds)
+        self._save_layout(cat, blocks)
+
+    def delete_word(self, cat, name):
+        p = self.cat_prog(cat); cust = {v[1] for v in self.custom(cat)}
+        if name in cust:
+            p["custom"] = [v for v in self.custom(cat) if v[1] != name]
+            es = p.get("custom_es")
+            if isinstance(es, dict): es.pop(name, None)
+        else:
+            d = self.deleted(cat); d.add(name); p["deleted"] = sorted(d)
+        ds = self.disabled(cat); ds.discard(name); p["disabled"] = sorted(ds)
+        blocks = [[n for n in blk if n != name] for blk in self._blocks_names(cat)]
+        self._save_layout(cat, blocks)
+
+    def restore_deleted(self, cat):
+        self.cat_prog(cat)["deleted"] = []
+        self.save()
+
+    def create_word(self, cat, row, block_i, es_past="", es_part=""):
+        """row = [es, base, past] (+part). Returns the base name, or None on error."""
+        row = [s.strip() for s in row]
+        base = row[1].lower()
+        if not base or base in self.vdict(cat) or any("|" in s for s in row):
+            return None
+        row[1] = base; row[2] = row[2].lower()
+        if len(row) > 3: row[3] = row[3].lower()
+        # snapshot the layout BEFORE the word is known, so reconciliation
+        # doesn't also auto-insert it (which would duplicate the row)
+        blocks = self._blocks_names(cat) or [[]]
+        p = self.cat_prog(cat)
+        c = self.custom(cat); c.append(row); p["custom"] = c
+        if es_past.strip() or es_part.strip():
+            m = p.get("custom_es")
+            if not isinstance(m, dict): m = {}
+            m[base] = [es_past.strip(), es_part.strip()]; p["custom_es"] = m
+        bi = max(0, min(block_i, len(blocks) - 1))
+        blocks[bi].append(base)
+        self._save_layout(cat, blocks)
+        return base

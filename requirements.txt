@@ -1,11 +1,10 @@
 # Para instalar todo: pip install -r requirements.txt
 #
-# Nota: tkinter viene incluido con Python (en Windows/macOS ya está;
-# en Linux: sudo apt install python3-tk)
+# Solo se necesita para las frases del modo lectura y la voz del modo escucha.
+# El programa funciona sin esto (modo escucha sin voz / lectura con campos vacíos).
 
-# Frases de práctica generadas con Gemini AI
+# Frases de práctica generadas con Gemini AI (modo lectura)
 google-genai
 
-# Voz (texto a voz) y reproducción de audio
+# Voz / texto a voz (modo escucha)
 edge-tts
-pygame
