@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verb Practice</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand" id="brand-home" title="Home">
+    <span class="logo">♫</span> Verb Practice
+  </div>
+  <button class="icon-btn" id="btn-settings" title="Settings">⚙</button>
+</header>
+
+<main id="view-home" class="view">
+  <h1 class="hello">What do you want to practice?</h1>
+  <div class="cards" id="cat-cards"></div>
+  <p class="note" id="home-note"></p>
+</main>
+
+<main id="view-setup" class="view hidden">
+  <h1 id="setup-title"></h1>
+  <section class="panel">
+    <div class="field-row">
+      <span class="lbl">Mode</span>
+      <div class="seg" id="seg-mode">
+        <button data-mode="read">Reading <small>fill the sentence</small></button>
+        <button data-mode="listen">Listening <small>type what you hear</small></button>
+      </div>
+    </div>
+    <div class="field-row">
+      <span class="lbl">Forms</span>
+      <div class="chips" id="form-chips"></div>
+    </div>
+    <div class="field-row">
+      <span class="lbl">Block</span>
+      <div class="chips" id="block-chips"></div>
+    </div>
+    <p class="hintline" id="setup-hint"></p>
+    <div class="btnrow">
+      <button class="primary big" id="btn-start"></button>
+      <button class="ghost" id="btn-restart">Start over from zero</button>
+    </div>
+  </section>
+</main>
+
+<main id="view-practice" class="view hidden">
+  <div class="prac-top">
+    <span id="prac-pos"></span>
+    <span id="prac-stats"></span>
+  </div>
+  <div class="bar"><div class="bar-fill" id="prac-bar"></div></div>
+  <section class="card prompt-card">
+    <div id="prompt-main"></div>
+    <div id="prompt-sub"></div>
+  </section>
+  <section id="prac-fields"></section>
+  <p id="prac-feedback"></p>
+  <p class="keys" id="prac-keys"></p>
+</main>
+
+<main id="view-done" class="view hidden">
+  <h1 id="done-title"></h1>
+  <p class="stats-line" id="done-stats"></p>
+  <div class="btnrow col">
+    <button class="primary big" id="btn-next"></button>
+    <button class="ghost" id="btn-repeat">Repeat this block</button>
+    <button class="ghost" id="btn-home">Back to home</button>
+  </div>
+</main>
+
+<dialog id="dlg-settings">
+  <h2>Settings</h2>
+  <div class="field-row"><span class="lbl">Voice</span>
+    <div class="seg" id="seg-voice"></div></div>
+  <div class="field-row"><span class="lbl">Theme</span>
+    <div class="seg" id="seg-theme"></div></div>
+  <div class="field-row key-row"><span class="lbl">Gemini API key</span>
+    <div class="keybox">
+      <p class="small">Reading mode uses Google's Gemini AI to write practice
+      sentences. The key is free and it is saved only on this computer.
+      <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Get one here.</a></p>
+      <div class="keyline">
+        <input id="inp-key" type="text" placeholder="Paste your key…" spellcheck="false">
+        <button class="primary" id="btn-key-save">Save</button>
+        <button class="ghost danger" id="btn-key-remove">Remove</button>
+      </div>
+      <p class="small" id="key-status"></p>
+    </div></div>
+  <div class="btnrow"><button class="ghost" id="btn-settings-close">Close</button></div>
+</dialog>
+
+<dialog id="dlg-quit">
+  <h2>Leave the block?</h2>
+  <div class="btnrow col">
+    <button class="ghost" id="btn-quit-restart">Restart block</button>
+    <button class="ghost" id="btn-quit-home">Back to home</button>
+    <button class="primary" id="btn-quit-cancel">Keep practicing</button>
+  </div>
+</dialog>
+
+<script src="/app.js"></script>
+</body>
+</html>

@@ -12,14 +12,21 @@ prune() deletes files for words that no longer exist in the verb lists.
 import os, queue, threading
 from pathlib import Path
 
+# GEN_OK: can we generate speech (edge-tts)?  Needed by desktop and web.
+# TTS_OK: can we also PLAY it locally (pygame)?  Only the desktop app needs
+# this — the web interface plays audio in the browser.
 try:
     import edge_tts as _edge_tts
-    import pygame as _pygame
     import asyncio as _asyncio
-    _pygame.mixer.init()
     if hasattr(_asyncio, "WindowsSelectorEventLoopPolicy"):
         _asyncio.set_event_loop_policy(_asyncio.WindowsSelectorEventLoopPolicy())
-    TTS_OK = True
+    GEN_OK = True
+except Exception:
+    GEN_OK = False
+try:
+    import pygame as _pygame
+    _pygame.mixer.init()
+    TTS_OK = GEN_OK
 except Exception:
     TTS_OK = False
 
@@ -54,6 +61,7 @@ def ensure(word, voice):
     dest = cache_path(word, voice)
     p = get_cached(word, voice)
     if p: return p
+    if not GEN_OK: return None
     data = generate(word, voice)
     if not data: return None
     AUDIO_DIR.mkdir(exist_ok=True)
