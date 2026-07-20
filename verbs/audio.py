@@ -1,33 +1,37 @@
 """Text-to-speech generation (edge-tts) with a disk cache.
 
-Playback happens in the browser, so this module only generates and caches
-mp3 files.  prune() removes audio of words that no longer exist.
+edge-tts is imported lazily — only when a sound is actually generated — so it
+never slows down startup.  GEN_OK just checks that the package is installed
+(cheap), without importing it.  Playback happens in the browser; this module
+only produces and caches mp3 files.
 """
-import os, threading
-from pathlib import Path
+import importlib.util
+import os
+import threading
 
-try:
-    import edge_tts as _edge_tts
-    import asyncio as _asyncio
-    if hasattr(_asyncio, "WindowsSelectorEventLoopPolicy"):
-        _asyncio.set_event_loop_policy(_asyncio.WindowsSelectorEventLoopPolicy())
-    GEN_OK = True
-except Exception:
-    GEN_OK = False
+from .paths import AUDIO_DIR
 
-AUDIO_DIR = Path(__file__).with_name("audio_cache")
+# Availability without the import cost: find_spec locates edge-tts in ~5 ms;
+# actually importing it costs ~400 ms, which we defer until first use.
+GEN_OK = importlib.util.find_spec("edge_tts") is not None
 
 
 def generate(text, voice):
     """Generate TTS and return mp3 bytes. Call from a worker thread."""
     import asyncio
+
+    import edge_tts
+    if hasattr(asyncio, "WindowsSelectorEventLoopPolicy"):
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
     async def _gen():
-        communicate = _edge_tts.Communicate(text, voice)
+        communicate = edge_tts.Communicate(text, voice)
         data = b""
         async for chunk in communicate.stream():
             if chunk["type"] == "audio":
                 data += chunk["data"]
         return data
+
     return asyncio.run(_gen())
 
 
@@ -49,10 +53,13 @@ def ensure(word, voice):
     """Return the cached mp3 path, generating it first if needed."""
     dest = cache_path(word, voice)
     p = get_cached(word, voice)
-    if p: return p
-    if not GEN_OK: return None
+    if p:
+        return p
+    if not GEN_OK:
+        return None
     data = generate(word, voice)
-    if not data: return None
+    if not data:
+        return None
     AUDIO_DIR.mkdir(exist_ok=True)
     # Unique temp name per call: two threads generating the same word must not
     # write to (and rename from) the same temp file, which would corrupt it.
@@ -61,8 +68,10 @@ def ensure(word, voice):
         tmp.write_bytes(data)
         tmp.replace(dest)
     finally:
-        try: tmp.unlink()
-        except OSError: pass
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
     return dest if dest.exists() else None
 
 
@@ -73,9 +82,14 @@ def prune(valid_words):
         for f in AUDIO_DIR.glob("*.mp3"):
             word = f.stem.split("__", 1)[-1]
             if word not in valid:
-                try: f.unlink()
-                except Exception: pass
+                try:
+                    f.unlink()
+                except OSError:
+                    pass
         for f in AUDIO_DIR.glob("*.tmp"):   # sweep temp files left by a crash
-            try: f.unlink()
-            except Exception: pass
-    except Exception: pass
+            try:
+                f.unlink()
+            except OSError:
+                pass
+    except Exception:
+        pass

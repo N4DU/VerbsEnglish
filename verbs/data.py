@@ -1,6 +1,7 @@
-"""Static data for Verb Practice: verb lists, themes and constants."""
-from pathlib import Path
+"""Static data for Verb Practice: verb lists, meanings and constants.
 
+Pure data — no I/O, no heavy imports.  File locations live in verbs.paths.
+"""
 # ── Verb lists ────────────────────────────────────────────────────────────────
 verbos_irregulares = [
     ["ser/estar","be","was-were","been"],["tener","have","had","had"],
@@ -200,32 +201,12 @@ ALT_FORMS = {
     "organized":("organised",), "organised":("organized",),
 }
 
-# ── Themes / constants ────────────────────────────────────────────────────────
-THEMES = {
-    "light": dict(BG="#F4F7FA", CARD="#FFFFFF", HOVER="#EAF1F5", SEL="#E3F2F1",
-                  FG="#101826", FG2="#4A5568", FG3="#93A0B4", BORDER="#DFE7EE",
-                  ACC="#0E9F9F", ACC_D="#0B7E7E", RED="#DC2626", GREEN="#15913B",
-                  ENTRY="#FFFFFF", TRACK="#E2E8F0"),
-    "dark":  dict(BG="#0F172A", CARD="#1B2437", HOVER="#243149", SEL="#12403C",
-                  FG="#E7ECF4", FG2="#A8B2C3", FG3="#67748B", BORDER="#2B3752",
-                  ACC="#2DD4BF", ACC_D="#14B8A6", RED="#F87171", GREEN="#4ADE80",
-                  ENTRY="#111B31", TRACK="#26324B"),
-}
-PTR = "▶ "
-BLOCK = 20
-FEED_OK  = 650    # ms feedback when everything is correct
-FEED_BAD = 2400   # ms feedback when something is wrong (Enter skips)
-BASE_W, BASE_H = 780, 560
-AUDIO_ICON = "♫"  # BMP-safe: astral emoji don't render in some Tk builds
-
-PROG_F = Path(__file__).with_name("progress.json")
-PHRA_F = Path(__file__).with_name("phrases_cache.json")
-CONF_F = Path(__file__).with_name("config.json")
-
-VOICES = [("en-US-AriaNeural", "Aria (Female)"), ("en-US-GuyNeural", "Guy (Male)")]
-COLS   = [("base","Base form",1), ("past","Past simple",2), ("part","Past participle",3)]
+# ── Configuration constants ───────────────────────────────────────────────────
+BLOCK  = 20                       # words per block when auto-splitting a list
+THEMES = ("light", "dark")        # the web UI owns the actual colours (CSS vars)
+VOICES = [("en-US-AriaNeural", "Aria (Female)"),
+          ("en-US-GuyNeural",  "Guy (Male)")]
 CATS   = {
-    "regular":   {"title":"Regular verbs",   "verbs":verbos_regulares,   "has_part":False},
-    "irregular": {"title":"Irregular verbs", "verbs":verbos_irregulares, "has_part":True},
+    "regular":   {"title": "Regular verbs",   "verbs": verbos_regulares,   "has_part": False},
+    "irregular": {"title": "Irregular verbs", "verbs": verbos_irregulares, "has_part": True},
 }
-SPIN = ["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"]

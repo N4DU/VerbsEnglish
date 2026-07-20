@@ -1,7 +1,7 @@
 # Verb Practice
 
 Práctica de verbos en inglés (regulares e irregulares) con dos maneras de aprender,
-integradas en un mismo programa:
+integradas en una misma app web local:
 
 - **Reading** — completa la frase: aparece una oración con un hueco `___`
   (generada con Gemini AI) y escribes la forma del verbo que corresponde.
@@ -13,6 +13,13 @@ integradas en un mismo programa:
 
 El modo se elige con una sola opción ("Mode") en la pantalla de configuración.
 
+## Cómo funciona
+
+Tu computadora es el servidor y el navegador es la interfaz. `python main.py`
+levanta un servidor web local (solo con la librería estándar) y abre la app en
+tu navegador. Nada sale de tu computadora salvo las peticiones opcionales a
+Gemini (frases) y al servicio de voz (audio).
+
 ## Instalación
 
 ```
@@ -20,41 +27,56 @@ pip install -r requirements.txt
 python main.py
 ```
 
-`tkinter` viene incluido con Python (en Linux: `sudo apt install python3-tk`).
+Las dependencias son **opcionales**: sin ellas la app funciona igual (lectura
+con campos en blanco y escucha sin voz). Se cargan solo cuando de verdad
+practicas, así que el arranque es instantáneo.
 
-Para las frases del modo Reading necesitas una API key gratuita de
-[Google AI Studio](https://aistudio.google.com/apikey) en `config.json`:
-
-```json
-{ "gemini_api_key": "TU_KEY_AQUI" }
-```
-
-Sin key el programa funciona igual (práctica sin frases, y el modo Listening
-no la necesita).
+La API key de Gemini (gratuita, de
+[Google AI Studio](https://aistudio.google.com/apikey)) se configura **desde la
+propia app**, en **⚙ Settings** — se guarda solo en tu computadora, en
+`config.json`. También puedes usar la variable de entorno `GEMINI_API_KEY`.
 
 ## Controles
+
+Todo se maneja con teclado (y también con mouse/touch):
 
 | Tecla | Acción |
 |---|---|
 | ↑ ↓ ← → | Navegar / mover |
 | Enter | Seleccionar / comprobar respuesta |
-| Espacio | Marcar casillas |
-| Esc | Volver / opciones |
-| A (en la lista de palabras) | Activar/desactivar un bloque entero |
-| F8 | Ventana siempre visible |
+| Espacio | Activar/desactivar · oír de nuevo (Listening) |
+| `,` | Abrir Settings (desde cualquier pantalla) |
+| Esc | Volver atrás |
 
-En **Edit word list** eliges qué palabras practicar y las mueves de bloque
-con ← →. Todo se guarda solo en `progress.json`.
+En **Edit word list** eliges qué palabras practicar, las reordenas (→ para
+tomar una y ↑↓ para deslizarla) y borras con `Del` / `⌫`. Todo se guarda solo
+en `progress.json`.
 
-## Archivos del código
+## Estructura del código
+
+Backend (paquete `verbs/`), pensado para arrancar rápido — nada pesado se
+importa hasta que hace falta:
 
 | Archivo | Contenido |
 |---|---|
-| `main.py` | Punto de entrada — el que se ejecuta |
-| `verbs_app.py` | Interfaz y lógica de sesión |
-| `verbs_data.py` | Listas de verbos, temas y constantes |
-| `verbs_audio.py` | Voz: generación, caché en disco y reproducción segura |
-| `verbs_phrases.py` | Caché de frases con Gemini AI |
+| `main.py` | Punto de entrada — lanza el servidor |
+| `verbs/paths.py` | Dónde se guardan los datos (progreso, config, cachés) |
+| `verbs/data.py` | Listas de verbos, significados y constantes |
+| `verbs/store.py` | Progreso, distribución de palabras y reglas de respuesta |
+| `verbs/phrases.py` | Caché de frases con Gemini AI (import perezoso) |
+| `verbs/audio.py` | Voz con edge-tts y caché en disco (import perezoso) |
+| `verbs/server.py` | Servidor HTTP y API |
+
+Frontend (`web/`), un módulo por pantalla:
+
+| Archivo | Contenido |
+|---|---|
+| `web/index.html`, `web/style.css` | Estructura y estilos |
+| `web/js/core.js` | Utilidades compartidas, estado y ruteo de vistas |
+| `web/js/home.js`, `setup.js`, `editor.js`, `practice.js` | Cada pantalla |
+| `web/js/settings.js`, `confirm.js` | Diálogos |
+| `web/js/keyboard.js` | Atajos globales de teclado |
+| `web/js/main.js` | Arranque de la interfaz |
 
 Los audios se guardan en `audio_cache/` (se crea sola); si cambias palabras,
 los audios de palabras eliminadas se limpian automáticamente al arrancar.
