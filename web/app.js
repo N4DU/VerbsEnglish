@@ -68,7 +68,7 @@ function homeKeys(k) {
 
 /* ═══════════════════════════ SETUP ═══════════════════════════ */
 const sel = {cat:null, mode:"read", forms:[], block:null};
-let setupRows = [], setupSel = 0;
+let setupGrid = [], setupR = 0, setupC = 0;
 
 function openSetup(cat) {
   sel.cat = cat;
@@ -77,62 +77,68 @@ function openSetup(cat) {
   sel.forms = ["base","past"].concat(c.has_part ? ["part"] : []);
   sel.block = null;
   $("setup-title").textContent = c.title;
-  setupSel = 0;
+  setupR = null; setupC = 0;          // null → default the cursor to "Continue practicing"
   renderSetup(); show("setup");
 }
+/* Setup is a grid of focusable buttons: one row per setting, cells within it.
+   ↑↓ walk between rows, ←→ walk within a row, Enter/Space clicks the cell —
+   so the highlight always sits on exactly one control, never a whole line. */
 function renderSetup() {
   const c = state.cats[sel.cat];
-  const p = $("setup-panel"); p.innerHTML = ""; setupRows = [];
+  const p = $("setup-panel"); p.innerHTML = ""; setupGrid = [];
 
   // mode
   const modeRow = fieldRow("Mode");
   const modeSeg = el("div","seg"); modeSeg.id = "seg-mode";
+  const modeCells = [];
   [["read","Reading","fill the sentence"],["listen","Listening","type what you hear"]]
     .forEach(([m,t,d]) => {
       const b = el("button"); b.innerHTML = `${t}<small>${d}</small>`;
       b.classList.toggle("on", sel.mode===m);
       b.disabled = (m==="listen" && !state.audio_ok);
       b.onclick = () => { if(!b.disabled){ sel.mode=m; renderSetup(); } };
-      modeSeg.appendChild(b);
+      modeSeg.appendChild(b); if (!b.disabled) modeCells.push(b);
     });
   modeRow.appendChild(modeSeg); p.appendChild(modeRow);
-  setupRows.push({kind:"mode"});
+  setupGrid.push(modeCells);
 
   // forms
   const formRow = fieldRow("Forms");
   const chips = el("div","chips");
+  const formCells = [];
   ["base","past","part"].forEach(f => {
     if (f==="part" && !c.has_part) return;
     const b = el("button", null, COL[f]);
     b.classList.toggle("on", sel.forms.includes(f));
     b.onclick = () => toggleForm(f);
-    chips.appendChild(b);
+    chips.appendChild(b); formCells.push(b);
   });
   formRow.appendChild(chips); p.appendChild(formRow);
-  setupRows.push({kind:"forms"});
+  setupGrid.push(formCells);
 
   // words editor link
   const wordsRow = fieldRow("Words");
   const wl = el("button","rowlink", `Edit word list  (${c.words_on}/${c.words_total} on) →`);
   wl.onclick = () => openEditor(sel.cat);
   wordsRow.appendChild(wl); p.appendChild(wordsRow);
-  setupRows.push({kind:"words"});
+  setupGrid.push([wl]);
 
   // blocks
   const blockRow = fieldRow("Block");
   const bchips = el("div","chips");
+  const blockCells = [];
   const cont = el("button", null, `Continue (${c.completed}/${c.words_on})`);
   cont.classList.toggle("on", sel.block===null);
   cont.onclick = () => { sel.block=null; renderSetup(); };
-  bchips.appendChild(cont);
+  bchips.appendChild(cont); blockCells.push(cont);
   c.blocks.forEach((size,i) => {
     const b = el("button", null, `Block ${i+1}`); b.title = `${size} words`;
     b.classList.toggle("on", sel.block===i);
     b.onclick = () => { sel.block=i; renderSetup(); };
-    bchips.appendChild(b);
+    bchips.appendChild(b); blockCells.push(b);
   });
   blockRow.appendChild(bchips); p.appendChild(blockRow);
-  setupRows.push({kind:"block"});
+  setupGrid.push(blockCells);
 
   // hint (red when no key in reading mode)
   const hint = el("p","hintline");
@@ -155,13 +161,12 @@ function renderSetup() {
   const reset = el("button","ghost","Reset progress"); reset.id = "btn-reset";
   reset.onclick = resetProgress;
   row.append(start, reset); p.appendChild(row);
-  setupRows.push({kind:"start"});
-  setupRows.push({kind:"reset"});
+  setupGrid.push([start, reset]);
 
+  if (setupR===null) { setupR = setupGrid.length-1; setupC = 0; }  // land on "Continue practicing"
   markSetup();
   $("setup-keys").innerHTML =
-    "<kbd>↑ ↓</kbd> move · <kbd>Space</kbd> toggle · <kbd>← →</kbd> change · " +
-    "<kbd>Enter</kbd> select · <kbd>Esc</kbd> back";
+    "<kbd>↑ ↓ ← →</kbd> move · <kbd>Enter</kbd> choose · <kbd>Esc</kbd> back";
 }
 function fieldRow(label){ const r=el("div","field-row"); r.appendChild(el("span","lbl",label)); return r; }
 function toggleForm(f) {
@@ -170,49 +175,19 @@ function toggleForm(f) {
   renderSetup();
 }
 function markSetup() {
-  const rows = $("setup-panel").querySelectorAll(".field-row, .btnrow > button");
-  // map setupSel to a highlightable element
-  const targets = [];
-  $("setup-panel").querySelectorAll(".field-row").forEach(r=>targets.push(r));
-  const btns = $("setup-panel").querySelectorAll(".btnrow button");
-  btns.forEach(b=>targets.push(b));
-  targets.forEach((t,i)=>t.classList.toggle("item-focus", i===setupSel));
+  setupR = Math.max(0, Math.min(setupR, setupGrid.length-1));
+  const row = setupGrid[setupR] || [];
+  setupC = Math.max(0, Math.min(setupC, row.length-1));
+  setupGrid.flat().forEach(b => b.classList.remove("kfocus"));
+  const cell = row[setupC];
+  if (cell) { cell.classList.add("kfocus"); cell.scrollIntoView({block:"nearest"}); }
 }
 function setupKeys(k) {
-  const n = setupRows.length;
-  const row = setupRows[setupSel];
-  if (k==="ArrowDown") { setupSel=Math.min(n-1,setupSel+1); markSetup(); }
-  else if (k==="ArrowUp") { setupSel=Math.max(0,setupSel-1); markSetup(); }
-  else if (k===" ") {
-    if (row.kind==="mode") { if(state.audio_ok){ sel.mode=sel.mode==="read"?"listen":"read"; renderSetup(); } }
-    else if (row.kind==="forms") cycleForm();
-    else if (row.kind==="block") { sel.block = sel.block===null ? 0 : null; renderSetup(); }
-  }
-  else if (k==="ArrowLeft"||k==="ArrowRight") {
-    const d = k==="ArrowRight" ? 1 : -1;
-    if (row.kind==="mode") { if(state.audio_ok){ sel.mode=sel.mode==="read"?"listen":"read"; renderSetup(); } }
-    else if (row.kind==="block") stepBlock(d);
-    else if (row.kind==="forms") cycleForm();
-  }
-  else if (k==="Enter") {
-    if (row.kind==="words") openEditor(sel.cat);
-    else if (row.kind==="reset") resetProgress();
-    else if (row.kind==="mode"||row.kind==="forms"||row.kind==="block"||row.kind==="start")
-      startSession();
-  }
-}
-let formCursor = 0;
-function cycleForm() {
-  const c = state.cats[sel.cat];
-  const all = ["base","past"].concat(c.has_part?["part"]:[]);
-  formCursor = (formCursor+1) % all.length;
-  toggleForm(all[formCursor]);
-}
-function stepBlock(d) {
-  const nb = state.cats[sel.cat].blocks.length;
-  if (sel.block===null) sel.block = d>0 ? 0 : nb-1;
-  else { sel.block += d; if (sel.block<0) sel.block=null; else if (sel.block>=nb) sel.block=nb-1; }
-  renderSetup();
+  if (k==="ArrowDown")       { setupR++; markSetup(); }
+  else if (k==="ArrowUp")    { setupR--; markSetup(); }
+  else if (k==="ArrowRight") { setupC++; markSetup(); }
+  else if (k==="ArrowLeft")  { setupC--; markSetup(); }
+  else if (k==="Enter" || k===" ") { (setupGrid[setupR]||[])[setupC]?.click(); }
 }
 async function resetProgress() {
   await api("/api/progress", {cat:sel.cat, completed:0});
@@ -642,9 +617,7 @@ document.addEventListener("keydown",(ev)=>{
       const es=inputs(); const i=Math.max(0,es.indexOf(document.activeElement));
       const f=S.words[S.idx]?.fields[i]; if(f) playWord(f.answer);}
     else if (k==="Escape"){ clearTimeout(S.timer);
-      askConfirm("Leave the block?","",
-        [["Restart block",()=>startBlock(S.block)],["Back to home",renderHome],
-         ["Keep practicing",()=>{ if(S.locked) S.timer=setTimeout(advance,600); else inputs()[0]?.focus(); }]]); }
+      show("setup"); refreshStateSoft().then(renderSetup); }
     return;
   }
   if (screen==="editor") { if(nav.includes(k)||k==="Enter"||k==="Delete"||k==="Escape"){ev.preventDefault(); edKeys(k);} return; }

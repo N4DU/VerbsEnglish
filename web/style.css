@@ -17,7 +17,7 @@
 * { box-sizing:border-box; margin:0; }
 html { -webkit-text-size-adjust:100%; }
 body {
-  background:var(--bg); color:var(--fg); min-height:100vh;
+  background:var(--bg); color:var(--fg); height:100vh; overflow:hidden;
   font:16px/1.55 "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   display:flex; flex-direction:column; align-items:center;
   padding:0 clamp(12px, 4vw, 28px) env(safe-area-inset-bottom);
@@ -51,9 +51,16 @@ a { color:var(--accd); }
 .icon-lbl { font-size:14px; }
 @media (max-width:520px){ .icon-lbl{ display:none; } }
 
-.view { width:100%; max-width:900px; flex:1 1 auto;
-  padding:clamp(8px,2vw,16px) 2px 44px; }
+/* the header is fixed; only the active view scrolls, and only when it must */
+.view { width:100%; max-width:900px; flex:1 1 auto; min-height:0;
+  overflow-y:auto; overflow-x:hidden; padding:clamp(8px,2vw,16px) 2px 24px; }
 .hidden { display:none !important; }
+/* Practice centres its content vertically, but with auto margins rather than
+   justify-content: when the block is taller than the window the margins
+   collapse to 0 so nothing is clipped and the view scrolls normally. */
+#view-practice { display:flex; flex-direction:column; }
+#view-practice > :first-child { margin-top:auto; }
+#view-practice > :last-child  { margin-bottom:auto; }
 h1 { font-size:clamp(21px,4.4vw,28px); margin:clamp(12px,3vw,22px) 0; text-align:center;
   letter-spacing:-.01em; }
 h2 { font-size:19px; margin-bottom:14px; }
@@ -104,7 +111,10 @@ h2 { font-size:19px; margin-bottom:14px; }
 .hintline.warn { color:var(--red); }
 .btnrow { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
 .btnrow.end { justify-content:flex-end; margin-top:6px; }
-.item-focus { box-shadow:0 0 0 2px var(--acc) inset; border-radius:11px; }
+/* keyboard focus lands on the SPECIFIC control, not the whole row */
+.kfocus { box-shadow:0 0 0 3px color-mix(in srgb, var(--acc) 55%, transparent) !important;
+  border-color:var(--acc) !important; }
+.rowlink.kfocus { box-shadow:none !important; text-decoration:underline; color:var(--acc); }
 
 /* menu-style vertical lists (done screen, confirm) */
 .menu-list { display:flex; flex-direction:column; gap:8px; max-width:380px;
@@ -154,11 +164,11 @@ h2 { font-size:19px; margin-bottom:14px; }
   font-size:clamp(11px,2.4vw,13px); padding:4px 2px 8px; flex-wrap:wrap; }
 .prompt-card { background:var(--card); border:1px solid var(--border);
   border-radius:var(--radius); box-shadow:var(--shadow); text-align:center;
-  padding:clamp(22px,4vw,32px) 18px; margin:14px 0 6px; }
-#prompt-main { font-size:clamp(26px,6vw,36px); font-weight:700; letter-spacing:-.01em; }
-#prompt-sub { color:var(--fg3); margin-top:6px; min-height:1.3em; }
-#prac-fields { display:flex; flex-direction:column; gap:clamp(12px,2.4vw,18px);
-  padding:20px 0 6px; }
+  padding:clamp(14px,3.2vh,26px) 18px; margin:10px 0 4px; }
+#prompt-main { font-size:clamp(24px,5vw,34px); font-weight:700; letter-spacing:-.01em; }
+#prompt-sub { color:var(--fg3); margin-top:5px; min-height:1.3em; }
+#prac-fields { display:flex; flex-direction:column; gap:clamp(10px,2vh,16px);
+  padding:clamp(10px,2vh,18px) 0 4px; }
 .fieldline { display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; }
 .fieldline .lab { color:var(--fg3); font-size:12.5px; width:clamp(70px,20vw,120px); text-align:right; }
 .fieldline input { width:min(62vw,180px); text-align:center; font-size:17px; }
