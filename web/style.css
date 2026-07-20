@@ -5,7 +5,7 @@
   --acc:#0ea5a5; --accd:#0b8686; --red:#e02424; --redbg:#fdecec;
   --green:#15913b; --track:#e6ecf3;
   --shadow:0 1px 2px rgba(16,24,38,.06), 0 10px 30px rgba(16,24,38,.06);
-  --radius:16px;
+  --radius:16px; --maxw:960px;
 }
 :root[data-theme="dark"] {
   --bg:#0e1626; --card:#18213400; --card:#182134; --hover:#222d44; --sel:#123c39;
@@ -41,7 +41,7 @@ input[type=text]:focus { border-color:var(--acc);
   box-shadow:0 0 0 3px color-mix(in srgb, var(--acc) 22%, transparent); }
 a { color:var(--accd); }
 
-.top { width:100%; max-width:900px; display:flex; justify-content:space-between;
+.top { width:100%; max-width:var(--maxw); display:flex; justify-content:space-between;
   align-items:center; padding:16px 2px 4px; }
 .brand { display:flex; align-items:center; gap:7px; font-weight:700;
   font-size:clamp(15px,3vw,18px); border:none; background:none; color:var(--fg); padding:6px; }
@@ -52,7 +52,7 @@ a { color:var(--accd); }
 @media (max-width:520px){ .icon-lbl{ display:none; } }
 
 /* the header is fixed; only the active view scrolls, and only when it must */
-.view { width:100%; max-width:900px; flex:1 1 auto; min-height:0;
+.view { width:100%; max-width:var(--maxw); flex:1 1 auto; min-height:0;
   overflow-y:auto; overflow-x:hidden; padding:clamp(8px,2vw,16px) 2px 24px; }
 .hidden { display:none !important; }
 /* Practice centres its content vertically, but with auto margins rather than
@@ -130,16 +130,21 @@ h2 { font-size:19px; margin-bottom:14px; }
   box-shadow:var(--shadow); padding:6px; }
 .ed-block { border-bottom:1px solid var(--border); padding:4px 0 8px; }
 .ed-block:last-child { border-bottom:none; }
-.ed-head { display:flex; align-items:center; gap:8px; padding:9px 10px 6px; flex-wrap:wrap; }
+.ed-head { display:flex; align-items:center; gap:8px; padding:9px 10px 6px; flex-wrap:wrap;
+  border-radius:10px; transition:background .14s, box-shadow .14s; }
 .ed-head .bt { font-weight:700; color:var(--acc); }
 .ed-head .cnt { color:var(--fg3); font-size:13px; }
 .ed-head .spacer { flex:1; }
 .ed-head .mini { font-size:12.5px; padding:5px 10px; border-radius:8px; }
+/* the focus ring must be visible on block headers too, not just word rows */
+.ed-head.focus { background:var(--sel); box-shadow:0 0 0 2px var(--acc) inset; }
 .ed-row { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px;
-  cursor:pointer; user-select:none; }
+  cursor:pointer; user-select:none; transition:background .14s, box-shadow .14s, transform .14s; }
 .ed-row:hover { background:var(--hover); }
 .ed-row.focus { background:var(--sel); box-shadow:0 0 0 2px var(--acc) inset; }
-.ed-row.carry { background:var(--sel); box-shadow:0 0 0 2px var(--accd) inset; }
+/* picked-up word slides sideways so it's obvious it's the one you're moving */
+.ed-row.carry { background:var(--sel); box-shadow:0 0 0 2px var(--accd) inset;
+  transform:translateX(16px); }
 .ed-row .chk { width:22px; font-size:17px; color:var(--acc); flex:none; text-align:center; }
 .ed-row.off .chk { color:var(--fg3); }
 .ed-row .forms { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -152,6 +157,8 @@ h2 { font-size:19px; margin-bottom:14px; }
   border-radius:7px; font-size:15px; }
 .ed-row .acts button:hover { background:var(--card); color:var(--acc); }
 .ed-row .acts button.del:hover { color:var(--red); }
+/* on the keyboard-focused row, make the remove (✕) button clearly the delete */
+.ed-row.focus .acts button.del { color:var(--red); }
 .ed-actions { display:flex; flex-direction:column; gap:2px; padding:4px 10px 2px; }
 .ed-link { text-align:left; background:none; border:none; color:var(--accd); padding:8px 6px;
   border-radius:9px; font-size:14px; }
@@ -159,24 +166,28 @@ h2 { font-size:19px; margin-bottom:14px; }
 .ed-link.focus { background:var(--sel); box-shadow:0 0 0 2px var(--acc) inset; }
 .ed-link.danger { color:var(--red); }
 
-/* PRACTICE */
+/* PRACTICE — scales up on roomy screens so it never looks tiny, and the
+   auto-margin centring above keeps it scroll-safe when the window is short. */
 .prac-top { display:flex; justify-content:space-between; gap:10px; color:var(--fg3);
-  font-size:clamp(11px,2.4vw,13px); padding:4px 2px 8px; flex-wrap:wrap; }
+  font-size:clamp(12px,1.4vw,14.5px); padding:4px 2px 10px; flex-wrap:wrap; }
 .prompt-card { background:var(--card); border:1px solid var(--border);
   border-radius:var(--radius); box-shadow:var(--shadow); text-align:center;
-  padding:clamp(14px,3.2vh,26px) 18px; margin:10px 0 4px; }
-#prompt-main { font-size:clamp(24px,5vw,34px); font-weight:700; letter-spacing:-.01em; }
-#prompt-sub { color:var(--fg3); margin-top:5px; min-height:1.3em; }
-#prac-fields { display:flex; flex-direction:column; gap:clamp(10px,2vh,16px);
-  padding:clamp(10px,2vh,18px) 0 4px; }
-.fieldline { display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; }
-.fieldline .lab { color:var(--fg3); font-size:12.5px; width:clamp(70px,20vw,120px); text-align:right; }
-.fieldline input { width:min(62vw,180px); text-align:center; font-size:17px; }
+  padding:clamp(18px,4vh,40px) clamp(20px,4vw,44px); margin:clamp(10px,2.2vh,20px) 0 6px; }
+#prompt-main { font-size:clamp(26px,3.6vw,48px); font-weight:700; letter-spacing:-.01em; }
+#prompt-sub { color:var(--fg3); margin-top:6px; min-height:1.3em; font-size:clamp(14px,1.5vw,18px); }
+#prac-fields { display:flex; flex-direction:column; gap:clamp(12px,2.4vh,22px);
+  padding:clamp(14px,2.6vh,24px) 0 4px; }
+.fieldline { display:flex; align-items:center; justify-content:center;
+  gap:clamp(10px,1.4vw,16px); flex-wrap:wrap; }
+.fieldline .lab { color:var(--fg3); font-size:clamp(12px,1.1vw,14px);
+  width:clamp(70px,16vw,130px); text-align:right; }
+.fieldline input { width:min(60vw,240px); text-align:center;
+  font-size:clamp(17px,1.5vw,22px); padding:clamp(11px,1.4vh,14px) 15px; }
 .fieldline input.good { border-color:var(--green); color:var(--green); }
 .fieldline input.bad  { border-color:var(--red);  color:var(--red); }
-.fieldline .sent { color:var(--fg2); font-size:clamp(14px,3.5vw,17px); }
-.play-btn { font-size:16px; width:46px; border-radius:99px; padding:8px 0; color:var(--accd); flex:none; }
-.meaning { min-width:120px; font-size:14.5px; color:var(--fg2); }
+.fieldline .sent { color:var(--fg2); font-size:clamp(15px,1.8vw,20px); }
+.play-btn { font-size:18px; width:52px; border-radius:99px; padding:9px 0; color:var(--accd); flex:none; }
+.meaning { min-width:120px; font-size:clamp(14px,1.3vw,16px); color:var(--fg2); }
 .meaning.good { color:var(--green); font-weight:600; }
 .meaning.bad  { color:var(--red);  font-weight:600; }
 #prac-feedback { text-align:center; font-weight:700; min-height:1.4em; margin-top:8px;

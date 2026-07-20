@@ -53,7 +53,7 @@ function renderHome() {
     wrap.appendChild(card);
   });
   $("home-keys").innerHTML =
-    "<kbd>← →</kbd> choose · <kbd>Enter</kbd> start · <kbd>⚙</kbd> settings";
+    "<kbd>← →</kbd> choose · <kbd>Enter</kbd> start · <kbd>,</kbd> settings";
   markHome(); show("home");
 }
 function markHome() {
@@ -166,7 +166,7 @@ function renderSetup() {
   if (setupR===null) { setupR = setupGrid.length-1; setupC = 0; }  // land on "Continue practicing"
   markSetup();
   $("setup-keys").innerHTML =
-    "<kbd>↑ ↓ ← →</kbd> move · <kbd>Enter</kbd> choose · <kbd>Esc</kbd> back";
+    "<kbd>↑ ↓ ← →</kbd> move · <kbd>Enter</kbd> choose · <kbd>,</kbd> settings · <kbd>Esc</kbd> back";
 }
 function fieldRow(label){ const r=el("div","field-row"); r.appendChild(el("span","lbl",label)); return r; }
 function toggleForm(f) {
@@ -189,9 +189,14 @@ function setupKeys(k) {
   else if (k==="ArrowLeft")  { setupC--; markSetup(); }
   else if (k==="Enter" || k===" ") { (setupGrid[setupR]||[])[setupC]?.click(); }
 }
-async function resetProgress() {
-  await api("/api/progress", {cat:sel.cat, completed:0});
-  state.cats[sel.cat].completed = 0; sel.block=null; renderSetup();
+function resetProgress() {
+  const c = state.cats[sel.cat];
+  if (!c.completed) { toast("Progress is already at zero."); return; }
+  askConfirm("Reset progress?",
+    `This clears the ${c.completed}/${c.words_on} words you've completed in ${c.title.toLowerCase()}.`,
+    [["Reset progress", async()=>{ await api("/api/progress",{cat:sel.cat,completed:0});
+        c.completed=0; sel.block=null; renderSetup(); }, true],
+     ["Cancel", null]]);
 }
 
 /* ═══════════════════════════ EDITOR ═══════════════════════════ */
@@ -292,9 +297,9 @@ function renderEditor(keepName) {
   list.appendChild(tail);
   scrollEditorTo(edSel);
   $("editor-keys").innerHTML = carry
-    ? "<kbd>↑ ↓</kbd> slide · <kbd>←</kbd> drop · <kbd>Esc</kbd> drop"
-    : "<kbd>↑ ↓</kbd> move · <kbd>Enter</kbd> select · <kbd>Space</kbd> toggle · " +
-      "<kbd>→</kbd> pick up · <kbd>Del</kbd> remove · <kbd>Esc</kbd> done";
+    ? "<kbd>↑ ↓</kbd> slide it · <kbd>←</kbd> drop · <kbd>Esc</kbd> drop"
+    : "<kbd>↑ ↓</kbd> move · <kbd>Space</kbd> on/off · <kbd>→</kbd> pick up &amp; reorder · " +
+      "<kbd>Del</kbd> / <kbd>⌫</kbd> delete word · <kbd>Esc</kbd> done";
 }
 const headIdx = (bi) => edItems.findIndex(it=>it.kind==="header"&&it.bi===bi);
 const wordIdx = (nm) => edItems.findIndex(it=>it.kind==="word"&&it.name===nm);
@@ -347,10 +352,20 @@ function edKeys(k) {
   else if (k==="ArrowUp") { edSel=Math.max(0,edSel-1); markEditor(); }
   else if (k==="Enter" || k===" ") { if(k===" " && edItems[edSel].kind!=="word" && edItems[edSel].kind!=="header"){} edActivate(); }
   else if (k==="ArrowRight") { if (edItems[edSel].kind==="word") pickCarry(edItems[edSel].name); }
-  else if (k==="Delete") { if (edItems[edSel].kind==="word") edDeleteWord(edItems[edSel].name); }
+  else if (k==="Delete"||k==="Backspace") { if (edItems[edSel].kind==="word") edDeleteWord(edItems[edSel].name); }
   else if (k==="Escape") { show("setup"); refreshStateSoft().then(renderSetup); }
 }
-function pickCarry(nm) { carry = nm; renderEditor(nm); }
+/* Pick up by toggling the class on the live row (not a full re-render) so the
+   CSS transition plays and the word visibly slides sideways. */
+function pickCarry(nm) {
+  carry = nm;
+  const row = $("editor-list").querySelector(`.ed-row[data-i="${wordIdx(nm)}"]`);
+  if (row) { row.classList.remove("focus"); row.classList.add("carry"); }
+  $("editor-sub").textContent = `Moving “${nm}” — ↑↓ to slide it, ← or Enter to drop it`;
+  $("editor-sub").style.color = "var(--acc)";
+  $("editor-keys").innerHTML =
+    "<kbd>↑ ↓</kbd> slide · <kbd>←</kbd> drop · <kbd>Esc</kbd> drop";
+}
 function dropCarry() { const nm=carry; carry=null; renderEditor(nm); refreshStateSoft(); }
 async function slideCarry(d) {
   const nm = carry;
@@ -452,10 +467,10 @@ function loadWord() {
   if (S.mode==="listen") {
     $("prompt-main").textContent = "♫  Listen…";
     $("prompt-sub").textContent = state.listen_hint ? w.es : "type each word you hear";
-    $("prac-keys").innerHTML="<kbd>Enter</kbd> check · <kbd>Space</kbd> hear again · <kbd>↑↓</kbd> move · <kbd>Esc</kbd> options";
+    $("prac-keys").innerHTML="<kbd>Enter</kbd> check · <kbd>Space</kbd> hear again · <kbd>↑↓</kbd> move · <kbd>,</kbd> settings · <kbd>Esc</kbd> back";
   } else {
     $("prompt-main").textContent = w.es; $("prompt-sub").textContent="";
-    $("prac-keys").innerHTML="<kbd>Enter</kbd> next / check · <kbd>↑↓</kbd> move · <kbd>Esc</kbd> options";
+    $("prac-keys").innerHTML="<kbd>Enter</kbd> next / check · <kbd>↑↓</kbd> move · <kbd>,</kbd> settings · <kbd>Esc</kbd> back";
   }
   const wrap = $("prac-fields"); wrap.innerHTML="";
   w.fields.forEach((f,fi) => {
@@ -527,7 +542,7 @@ async function blockDone() {
        ["Repeat this block", ()=>startBlock(S.block)],
        ["Back to home", renderHome]];
   renderMenu($("done-list"), opts, 0, "done");
-  $("done-keys").innerHTML="<kbd>↑ ↓</kbd> move · <kbd>Enter</kbd> select · <kbd>Esc</kbd> home";
+  $("done-keys").innerHTML="<kbd>↑ ↓</kbd> move · <kbd>Enter</kbd> select · <kbd>,</kbd> settings · <kbd>Esc</kbd> home";
   show("done");
 }
 
@@ -570,8 +585,13 @@ function renderSettings() {
       w.id="voice-warn"; $("seg-voice").after(w); }
   }
 }
+function openSettings() {
+  if (document.querySelector("dialog[open]")) return;   // don't stack over another dialog
+  renderSettings(); $("dlg-settings").showModal();
+}
 function wireSettings() {
-  $("btn-settings").onclick=()=>{ renderSettings(); $("dlg-settings").showModal(); };
+  $("btn-settings").onclick=openSettings;
+  $("btn-settings").title = "Settings ( , )";
   $("btn-settings-close").onclick=()=>$("dlg-settings").close();
   $("btn-key-save").onclick=async()=>{ const k=$("inp-key").value.trim(); if(!k) return;
     state=await api("/api/settings",{gemini_key:k}); $("inp-key").value=""; renderSettings(); softRefresh(); };
@@ -608,6 +628,9 @@ document.addEventListener("keydown",(ev)=>{
     return; // dialogs handle their own keys / Esc closes them natively
   }
   const k = ev.key;
+  // Settings is reachable from anywhere — "," never appears in an answer, so
+  // it's safe even while typing in a practice field.
+  if (k==="," && !ev.ctrlKey && !ev.metaKey && !ev.altKey) { ev.preventDefault(); openSettings(); return; }
   const nav = ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "];
   if (screen==="practice") {
     if (k==="Enter"){ev.preventDefault(); pracEnter();}
@@ -620,7 +643,7 @@ document.addEventListener("keydown",(ev)=>{
       show("setup"); refreshStateSoft().then(renderSetup); }
     return;
   }
-  if (screen==="editor") { if(nav.includes(k)||k==="Enter"||k==="Delete"||k==="Escape"){ev.preventDefault(); edKeys(k);} return; }
+  if (screen==="editor") { if(nav.includes(k)||k==="Enter"||k==="Delete"||k==="Backspace"||k==="Escape"){ev.preventDefault(); edKeys(k);} return; }
   if (screen==="home")  { if(nav.includes(k)||k==="Enter"){ev.preventDefault(); homeKeys(k);} else if(k==="Escape"){} return; }
   if (screen==="setup") { if(nav.includes(k)||k==="Enter"){ev.preventDefault(); setupKeys(k);} else if(k==="Escape"){renderHome();} return; }
   if (screen==="done")  { if(k==="ArrowUp"||k==="ArrowDown"||k==="Enter"){ev.preventDefault(); menuKeys(k);} else if(k==="Escape"){renderHome();} return; }
