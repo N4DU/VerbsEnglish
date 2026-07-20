@@ -1,11 +1,12 @@
-"""Shared data layer: progress, word layout, settings and answer rules.
+"""Data layer: progress, word layout, settings and answer rules.
 
-Reads and writes the same progress.json / config.json as the desktop app,
-so the web interface and the Tk interface stay interchangeable.
+All persistence and every word-list mutation live here, so the server stays
+a thin HTTP wrapper over these methods.
 """
 import json, os, random
 
-from verbs_data import ALT_FORMS, SPANISH_FORMS, BLOCK, PROG_F, CONF_F, CATS, VOICES
+from .data import ALT_FORMS, SPANISH_FORMS, BLOCK, CATS, VOICES
+from .paths import PROG_F, CONF_F
 
 
 def _atomic_write(path, text):

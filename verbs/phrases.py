@@ -3,15 +3,14 @@
 Cache key: "verb|col|answer"  e.g. "go|past|went", "be|past|was"
 Value: list of sentence strings with a ___ placeholder.
 """
+import importlib.util
 import json, threading, time
 
-from verbs_data import PHRA_F
+from .paths import PHRA_F
 
-try:
-    from google import genai as _genai
-    GEMINI_OK = True
-except ImportError:
-    GEMINI_OK = False
+# google-genai pulls in ~1 s of imports (pydantic, google-auth, cryptography).
+# Detect it cheaply here and import it lazily inside _fetch, off the hot path.
+GEMINI_OK = importlib.util.find_spec("google.genai") is not None
 
 
 class Cache:
@@ -86,7 +85,8 @@ class Cache:
             '{"verb|col|answer": ["sentence1","sentence2","sentence3","sentence4","sentence5"]}\n\n'
             f"Items:\n{lines}"
         )
-        client = _genai.Client(api_key=api_key); resp = None
+        from google import genai
+        client = genai.Client(api_key=api_key); resp = None
         for att in range(4):
             try:
                 resp = client.models.generate_content(

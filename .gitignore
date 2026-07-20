@@ -5,3 +5,6 @@ audio_cache/
 # Datos locales del usuario — nunca se suben al repo
 config.json
 progress.json
+
+# Archivos temporales de escritura atómica
+*.tmp
