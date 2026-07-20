@@ -169,11 +169,51 @@ function pickCarry(nm) {
   $("editor-keys").innerHTML =
     "<kbd>↑ ↓</kbd> slide · <kbd>←</kbd> drop · <kbd>Esc</kbd> drop";
 }
-function dropCarry() { const nm=carry; carry=null; renderEditor(nm); refreshStateSoft(); }
+async function dropCarry() {
+  const nm = carry; carry = null;
+  try { ed = await api("/api/editor/" + ed.cat); } catch(_){}   // authoritative resync
+  renderEditor(nm); refreshStateSoft();
+}
 async function slideCarry(d) {
   const nm = carry;
   ed = await api("/api/editor", {cat:ed.cat, action:"move", name:nm, dir:d>0?"down":"up"});
-  renderEditor(nm);
+  moveCarriedRow(d);            // move just the one row — no full-list rebuild, so nothing "flashes"
+}
+/* Slide the carried row one slot within the live DOM (mirroring what the server
+   just did) instead of re-rendering the whole list — a full re-render repainted
+   every row, which read as the list "rearranging". edItems/edSel aren't used
+   while carrying; dropCarry re-renders from fresh state to reconcile. */
+function moveCarriedRow(dir) {
+  const list = $("editor-list");
+  const row = list.querySelector(".ed-row.carry");
+  if (!row) { renderEditor(carry); return; }
+  if (dir > 0) {
+    const sib = row.nextElementSibling;
+    if (sib && sib.classList.contains("ed-row")) sib.after(row);
+    else {
+      const next = row.closest(".ed-block")?.nextElementSibling;
+      if (next && next.classList.contains("ed-block")) next.querySelector(".ed-head").after(row);
+      else return;
+    }
+  } else {
+    const sib = row.previousElementSibling;
+    if (sib && sib.classList.contains("ed-row")) sib.before(row);
+    else {
+      const prev = row.closest(".ed-block")?.previousElementSibling;
+      if (prev && prev.classList.contains("ed-block")) prev.querySelector(".ed-actions").before(row);
+      else return;
+    }
+  }
+  recountHeaders();
+  row.scrollIntoView({block:"nearest"});
+}
+function recountHeaders() {
+  $("editor-list").querySelectorAll(".ed-block").forEach(block => {
+    const rows = [...block.querySelectorAll(".ed-row")];
+    const on = rows.filter(r => !r.classList.contains("off")).length;
+    const cnt = block.querySelector(".ed-head .cnt");
+    if (cnt) cnt.textContent = `${on}/${rows.length} on`;
+  });
 }
 function edDeleteWord(nm) {
   const row = ed.blocks.flat().find(r=>r.name===nm);
@@ -229,5 +269,8 @@ function openWordDialog(bi) {
     ed = res; await refreshStateSoft(); dlg.close(); renderEditor(body.base.trim().toLowerCase());
   };
   $("btn-word-cancel").onclick = () => dlg.close();
+  dlg.onkeydown = (e) => {   // Enter in any field saves (the dialog has no <form>)
+    if (e.key === "Enter" && e.target.tagName === "INPUT") { e.preventDefault(); $("btn-word-save").click(); }
+  };
   dlg.showModal(); inputs.es.focus();
 }

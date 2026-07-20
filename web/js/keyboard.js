@@ -5,13 +5,20 @@ import { homeKeys, renderHome } from "./home.js";
 import { setupKeys } from "./setup.js";
 import { edKeys } from "./editor.js";
 import { practiceKeys, menuKeys } from "./practice.js";
-import { openSettings } from "./settings.js";
-import { dialogKeydown } from "./confirm.js";
+import { openSettings, settingsKeydown } from "./settings.js";
+import { confirmKeydown } from "./confirm.js";
 
 const NAV = ["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "];
 
 document.addEventListener("keydown", (ev) => {
-  if (dialogKeydown(ev)) return;               // a dialog is open — it handles keys
+  // A dialog owns the keyboard while it's open.
+  const open = document.querySelector("dialog[open]");
+  if (open) {
+    if (open.id === "dlg-confirm") confirmKeydown(ev);
+    else if (open.id === "dlg-settings") settingsKeydown(ev);
+    // #dlg-word is a plain form — Tab / typing / Esc handle it natively.
+    return;
+  }
   const k = ev.key;
   // Settings is reachable from anywhere — "," never appears in an answer, so
   // it's safe even while typing in a practice field.
